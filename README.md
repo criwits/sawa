@@ -1,3 +1,3 @@
 # Simple Aircraft War on Android
 
-Dong Dong zui shuai!
+yi yan ding zhen
