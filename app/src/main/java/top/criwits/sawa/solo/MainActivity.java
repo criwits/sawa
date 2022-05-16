@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import top.criwits.sawa.config.Graphics;
@@ -68,6 +70,22 @@ public class MainActivity extends AppCompatActivity {
         getScaleRatio();
         view = new GameView(this, Graphics.screenHeight, Graphics.screenWidth);
         setContentView(view);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+        }
+        return  true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            this.finish();
+        }
+        return true;
     }
 
 

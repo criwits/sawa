@@ -102,7 +102,7 @@ public abstract class AbstractFlyingObject {
     public int getWidth() {
         if (width == -1){
             // Use the size of image assets
-            width = ImageManager.get(this).getWidth();
+            width = (int)(ImageManager.get(this).getWidth() * Graphics.scalingFactor);
         }
         return width;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractFlyingObject {
     public int getHeight() {
         if (height == -1){
             // Use the size of image assets
-            height = ImageManager.get(this).getHeight();
+            height = (int)(ImageManager.get(this).getHeight() * Graphics.scalingFactor);
         }
         return height;
     }

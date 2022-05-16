@@ -38,21 +38,6 @@ public class ImageManager {
     public static Bitmap PROP_BULLET_IMG;
 
     /**
-     * 将贴图和对象绑定
-     */
-    static {
-        CLASSNAME_IMAGE_MAP.put(HeroAircraft.class.getName(), HERO_IMG);
-        CLASSNAME_IMAGE_MAP.put(MobEnemy.class.getName(), MOB_IMG);
-        CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), BULLET_HERO_IMG);
-        CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), BULLET_ENEMY_IMG);
-        CLASSNAME_IMAGE_MAP.put(EliteEnemy.class.getName(), ELITE_IMG);
-        CLASSNAME_IMAGE_MAP.put(BloodProp.class.getName(), PROP_BLOOD_IMG);
-        CLASSNAME_IMAGE_MAP.put(BombProp.class.getName(), PROP_BOMB_IMG);
-        CLASSNAME_IMAGE_MAP.put(BulletProp.class.getName(), PROP_BULLET_IMG);
-        CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), BOSS_IMG);
-    }
-
-    /**
      * 加载图像文件
      * @param r getResource() 的返回值
      */
@@ -71,6 +56,16 @@ public class ImageManager {
         PROP_BLOOD_IMG = BitmapFactory.decodeResource(r, R.drawable.prop_blood);
         PROP_BOMB_IMG = BitmapFactory.decodeResource(r, R.drawable.prop_bomb);
         PROP_BULLET_IMG = BitmapFactory.decodeResource(r, R.drawable.prop_bullet);
+
+        CLASSNAME_IMAGE_MAP.put(HeroAircraft.class.getName(), HERO_IMG);
+        CLASSNAME_IMAGE_MAP.put(MobEnemy.class.getName(), MOB_IMG);
+        CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), BULLET_HERO_IMG);
+        CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), BULLET_ENEMY_IMG);
+        CLASSNAME_IMAGE_MAP.put(EliteEnemy.class.getName(), ELITE_IMG);
+        CLASSNAME_IMAGE_MAP.put(BloodProp.class.getName(), PROP_BLOOD_IMG);
+        CLASSNAME_IMAGE_MAP.put(BombProp.class.getName(), PROP_BOMB_IMG);
+        CLASSNAME_IMAGE_MAP.put(BulletProp.class.getName(), PROP_BULLET_IMG);
+        CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), BOSS_IMG);
     }
 
 

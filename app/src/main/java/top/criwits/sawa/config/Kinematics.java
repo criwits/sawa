@@ -9,4 +9,5 @@ public class Kinematics {
     public static int bossSpeedX = 6;
 
     public static int bossLocationY = 100;
+    public static int backgroundShiftPerFrame = 8;
 }
