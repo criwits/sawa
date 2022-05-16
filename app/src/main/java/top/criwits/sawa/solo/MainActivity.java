@@ -1,4 +1,4 @@
-package top.criwits.sawa;
+package top.criwits.sawa.solo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
-    SimpleSurfaceView view;
+import top.criwits.sawa.config.Graphics;
+import top.criwits.sawa.utils.ImageManager;
 
-    private int screenHeight, screenWidth;
+public class MainActivity extends AppCompatActivity {
+    GameView view;
 
     /**
      * 获得屏幕尺寸，然后写入这个 Activity 的
@@ -18,9 +19,14 @@ public class MainActivity extends AppCompatActivity {
     private void getScreenSize() {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-        screenHeight = dm.heightPixels;
-        screenWidth = dm.widthPixels;
-        System.out.println(screenHeight +","+ screenWidth);
+        Graphics.screenHeight = dm.heightPixels;
+        Graphics.screenWidth = dm.widthPixels;
+    }
+
+    private void getScaleRatio() {
+        // 计算缩放倍率
+        Graphics.scalingFactor = (double)Graphics.screenWidth / (double)ImageManager.BG_IMG.getWidth();
+        System.out.println("Screen scale ratio:" + Graphics.scalingFactor);
     }
 
     /**
@@ -32,12 +38,12 @@ public class MainActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
+                        // 让内容可以被状态栏覆盖，
+                        // 这样就不会因为状态栏、导航栏等的出现和消失造成问题了
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        // Hide the nav bar and status bar
+                        // 隐藏状态栏、导航栏
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
@@ -56,10 +62,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadImages();
         enterFullScreenMode();
         getScreenSize();
-        loadImages();
-        view = new SimpleSurfaceView(this, screenHeight, screenWidth);
+        getScaleRatio();
+        view = new GameView(this, Graphics.screenHeight, Graphics.screenWidth);
         setContentView(view);
     }
 
