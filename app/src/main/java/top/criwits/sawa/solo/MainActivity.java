@@ -74,8 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (view.checkHeroMovement((int)event.getX(), (int)event.getY())) {
+                view.setHeroLocation((int)event.getX(), (int)event.getY());
+            }
         }
         return  true;
     }

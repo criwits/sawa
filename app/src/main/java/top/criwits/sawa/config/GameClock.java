@@ -5,5 +5,5 @@ package top.criwits.sawa.config;
  */
 public class GameClock {
     public static int timeInterval = 20;
-    public static int cycleDuration = 400;
+    public static int cycleDuration = 480;
 }

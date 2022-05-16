@@ -176,7 +176,7 @@ public class GameView extends SurfaceView implements
         textPaint.setTypeface(typeface);
         textPaint.setTextSize(getResources().getDimensionPixelSize(R.dimen.scoreFontSize));
         canvas.drawText("SCORE: " + String.valueOf(score), 40,150, textPaint);
-        canvas.drawText("LIFE: " + String.valueOf(score), 40,220, textPaint);
+        canvas.drawText("LIFE: " + String.valueOf(HeroAircraft.getInstance().getHp()), 40,220, textPaint);
 
         sh.unlockCanvasAndPost(canvas);
     }
@@ -381,4 +381,28 @@ public class GameView extends SurfaceView implements
     }
 
     protected void difficultyIncrease() {}
+
+    /**
+     * 检查按下的位置是否可以拖动英雄机
+     * @param locationX
+     * @param locationY
+     * @return
+     */
+    public boolean checkHeroMovement(int locationX, int locationY) {
+        if ((HeroAircraft.getInstance().getLocationX() - HeroAircraft.getInstance().getWidth() / 2
+                <= locationX && locationX
+                <= HeroAircraft.getInstance().getLocationX() + HeroAircraft.getInstance().getWidth() / 2) &&
+            (HeroAircraft.getInstance().getLocationY() - HeroAircraft.getInstance().getHeight() / 2
+                    <= locationY && locationY
+                    <= HeroAircraft.getInstance().getLocationY() + HeroAircraft.getInstance().getHeight() / 2)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void setHeroLocation(int locationX, int locationY) {
+        HeroAircraft.getInstance().setLocation((double)locationX, (double) locationY);
+    }
 }
