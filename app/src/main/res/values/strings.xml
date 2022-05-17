@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Simple Aircraft War</string>
+    <string name="solo_difficulty_easy">Easy mode</string>
+    <string name="solo_difficulty_moderate">Moderate mode</string>
+    <string name="solo_difficulty_hard">Hard mode</string>
+    <string name="solo_game_start">Start Singleplayer Game!</string>
+    <string name="multi_server_address">Server address</string>
+    <string name="multi_user_name">User name</string>
+    <string name="multi_user_password">Password</string>
+    <string name="multi_game_start">Start Multiplayer Game!</string>
 </resources>
