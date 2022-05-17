@@ -6,6 +6,7 @@ import top.criwits.sawa.bullet.AbstractBullet;
 import top.criwits.sawa.bullet.BulletStrategyParallel;
 import top.criwits.sawa.bullet.BulletStrategyScatter;
 import top.criwits.sawa.config.Difficulty;
+import top.criwits.sawa.media.SoundHelper;
 // import top.criwits.sawa.sound.PlaySound;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class BulletProp extends AbstractProp {
 
     @Override
     public int action(HeroAircraft heroAircraft, List<AbstractAircraft> enemyAircraft, List<AbstractBullet> abstractBullets) {
-        // play soundList<AbstractAircraft> enemyAircraft, List<AbstractBullet> abstractBullets
-        // PlaySound.playGetSupplySound();
+        // play sound
+        SoundHelper.playGetSupply();
         // add more bullets
         heroAircraft.cannon.setCount(heroAircraft.cannon.getCount() + Difficulty.bulletPropEffectLevel);
         heroAircraft.cannon.setStrategy(new BulletStrategyScatter());

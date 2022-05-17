@@ -4,8 +4,7 @@ import android.graphics.Bitmap;
 
 import top.criwits.sawa.aircraft.AbstractAircraft;
 import top.criwits.sawa.config.Graphics;
-import top.criwits.sawa.config.Kinematics;
-import top.criwits.sawa.utils.ImageManager;
+import top.criwits.sawa.media.ImageManager;
 
 
 /**

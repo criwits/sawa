@@ -5,6 +5,7 @@ import top.criwits.sawa.aircraft.BossEnemy;
 import top.criwits.sawa.aircraft.HeroAircraft;
 import top.criwits.sawa.basic.AbstractFlyingObject;
 import top.criwits.sawa.bullet.AbstractBullet;
+import top.criwits.sawa.media.SoundHelper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class BombProp extends AbstractProp {
         // subscribe
         addAircraft(enemyAircraft, abstractBullets);
         // work
-        // PlaySound.playBombExplosionSound();
+        SoundHelper.playBombExplosion();
         return notifyAllFlyingObjects();
     }
 

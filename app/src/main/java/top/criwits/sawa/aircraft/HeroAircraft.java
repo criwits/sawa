@@ -2,6 +2,7 @@ package top.criwits.sawa.aircraft;
 
 import top.criwits.sawa.bullet.*;
 import top.criwits.sawa.config.Difficulty;
+import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.prop.AbstractProp;
 
 import java.util.LinkedList;
@@ -33,6 +34,15 @@ public class HeroAircraft extends AbstractAircraft {
 
     /** Attack constants */
     public Cannon cannon = new Cannon(0, -1, Difficulty.heroBulletPower, 1, new BulletStrategyParallel());
+
+    public void move(int deltaX, int deltaY) {
+        if (0 <= deltaX + locationX && deltaX + locationX <= Graphics.screenWidth) {
+            locationX = deltaX + locationX;
+        }
+        if (0 <= deltaY + locationY && deltaY + locationY <= Graphics.screenHeight) {
+            locationY = deltaY + locationY;
+        }
+    }
 
     @Override
     public List<AbstractBullet> shoot() {

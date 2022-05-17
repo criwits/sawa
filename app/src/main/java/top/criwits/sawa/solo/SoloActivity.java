@@ -2,8 +2,12 @@ package top.criwits.sawa.solo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -11,10 +15,16 @@ import android.view.View;
 
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.LoadConfig;
-import top.criwits.sawa.utils.ImageManager;
+import top.criwits.sawa.config.Media;
+import top.criwits.sawa.media.ImageManager;
+import top.criwits.sawa.media.MusicService;
+import top.criwits.sawa.media.SoundHelper;
 
 public class SoloActivity extends AppCompatActivity {
-    SoloGameView view;
+
+    private ServiceConnection conn;
+    private Intent intent;
+    GameView view;
 
     /**
      * 获得屏幕尺寸，然后写入这个 Activity 的
@@ -85,8 +95,19 @@ public class SoloActivity extends AppCompatActivity {
                 break;
         }
 
-        view = new SoloGameView(this, Graphics.screenHeight, Graphics.screenWidth);
+        view = new GameView(this, Graphics.screenHeight, Graphics.screenWidth);
         setContentView(view);
+
+        // 绑定音乐服务
+        System.out.println(Media.music);
+        conn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) { }
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) { }
+        };
+        intent = new Intent(this, MusicService.class);
+        bindService(intent, conn, Context.BIND_AUTO_CREATE);
     }
 
     /**
@@ -94,12 +115,20 @@ public class SoloActivity extends AppCompatActivity {
      * @param event
      * @return
      */
+
+    private int lastX, lastY;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            lastX = (int) event.getX();
+            lastY = (int) event.getY();
+        }
+
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (view.checkHeroMovement((int)event.getX(), (int)event.getY())) {
-                view.setHeroLocation((int)event.getX(), (int)event.getY());
-            }
+            int currentX = (int) event.getX(), currentY = (int) event.getY();
+            view.moveHeroAircraft(currentX - lastX, currentY - lastY);
+            lastX = currentX;
+            lastY = currentY;
         }
         return true;
     }
@@ -112,6 +141,9 @@ public class SoloActivity extends AppCompatActivity {
         return true;
     }
 
-
-
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unbindService(conn);
+    }
 }

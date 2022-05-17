@@ -2,16 +2,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <!-- "Mark Favorite", should appear as action button if possible -->
-    <item
-        android:id="@+id/action_audio_switch"
-        android:icon="@drawable/ic_baseline_volume_up_24"
-        android:title="@string/audio_switch"
-        app:showAsAction="ifRoom" />
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"
         android:title="@string/app_name"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/app_bar_switch"
+        android:title="Switch"
+        app:actionLayout="@layout/switch_item"
+        app:showAsAction="always" />
 
 </menu>
     

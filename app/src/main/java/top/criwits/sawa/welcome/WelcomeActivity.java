@@ -9,12 +9,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
+import android.widget.Switch;
 
 import top.criwits.sawa.R;
-import top.criwits.sawa.config.LoadConfig;
+import top.criwits.sawa.config.Media;
 import top.criwits.sawa.solo.SoloActivity;
-import top.criwits.sawa.solo.SoloGameView;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -31,12 +32,9 @@ public class WelcomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                // User chose the "Settings" item, show the app settings UI...
                 return true;
 
-            case R.id.action_audio_switch:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+            case R.id.audioSwitch:
                 return true;
 
             default:
@@ -51,9 +49,9 @@ public class WelcomeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_welcome, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @SuppressLint("NonConstantResourceId")
     public void onRadioButtonClicked(View view) {
@@ -83,8 +81,13 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    public void startSoloGame(View view) {
+    public void audioChange(View view) {
+        Media.music = ((Switch) view).isChecked();
+    }
 
+
+
+    public void startSoloGame(View view) {
         Intent intent = new Intent(this, SoloActivity.class);
         intent.putExtra("top.criwits.sawa.DIFFICULTY_INDEX", difficulty);
         startActivity(intent);

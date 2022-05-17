@@ -1,6 +1,6 @@
 package top.criwits.sawa.config;
 
-import top.criwits.sawa.utils.ImageManager;
+import top.criwits.sawa.media.ImageManager;
 
 /**
  * Config loader
