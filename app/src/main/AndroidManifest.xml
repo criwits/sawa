@@ -20,8 +20,8 @@
         </activity>
         <activity
             android:name=".solo.SoloActivity"
-            android:exported="false">
-
+            android:exported="false"
+            android:hardwareAccelerated="true">
         </activity>
     </application>
 

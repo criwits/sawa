@@ -143,8 +143,9 @@ public class SoloGameView extends SurfaceView implements
     /**
      * 每帧的绘图函数
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void draw(){
-        canvas = sh.lockCanvas();
+        canvas = sh.lockHardwareCanvas();
         if(sh == null || canvas == null){
             return;
         }
