@@ -2,6 +2,7 @@ package top.criwits.sawa.solo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -9,10 +10,11 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import top.criwits.sawa.config.Graphics;
+import top.criwits.sawa.config.LoadConfig;
 import top.criwits.sawa.utils.ImageManager;
 
 public class SoloActivity extends AppCompatActivity {
-    GameView view;
+    SoloGameView view;
 
     /**
      * 获得屏幕尺寸，然后写入这个 Activity 的
@@ -68,10 +70,30 @@ public class SoloActivity extends AppCompatActivity {
         enterFullScreenMode();
         getScreenSize();
         getScaleRatio();
-        view = new GameView(this, Graphics.screenHeight, Graphics.screenWidth);
+
+        // 获取难度信息
+        Intent intent = getIntent();
+        switch(intent.getIntExtra("top.criwits.sawa.DIFFICULTY_INDEX", 0)) {
+            case 0:
+                LoadConfig.loadEasyMode();
+                break;
+            case 1:
+                LoadConfig.loadModerateMode();
+                break;
+            case 2:
+                LoadConfig.loadHardMode();
+                break;
+        }
+
+        view = new SoloGameView(this, Graphics.screenHeight, Graphics.screenWidth);
         setContentView(view);
     }
 
+    /**
+     * 触摸控制英雄机
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -79,7 +101,7 @@ public class SoloActivity extends AppCompatActivity {
                 view.setHeroLocation((int)event.getX(), (int)event.getY());
             }
         }
-        return  true;
+        return true;
     }
 
     @Override

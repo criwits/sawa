@@ -29,6 +29,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:checkedButton="@+id/soloEasyMode"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -37,19 +38,25 @@
                     android:id="@+id/soloEasyMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/solo_difficulty_easy" />
+                    android:text="@string/solo_difficulty_easy"
+                    android:onClick="onRadioButtonClicked"
+                    tools:ignore="UsingOnClickInXml" />
 
                 <RadioButton
                     android:id="@+id/soloModerateMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/solo_difficulty_moderate" />
+                    android:text="@string/solo_difficulty_moderate"
+                    android:onClick="onRadioButtonClicked"
+                    tools:ignore="UsingOnClickInXml" />
 
                 <RadioButton
                     android:id="@+id/soloHardMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/solo_difficulty_hard" />
+                    android:text="@string/solo_difficulty_hard"
+                    android:onClick="onRadioButtonClicked"
+                    tools:ignore="UsingOnClickInXml" />
             </RadioGroup>
 
             <Button
@@ -60,6 +67,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="16dp"
+                android:onClick="startSoloGame"
                 android:text="@string/solo_game_start"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -146,4 +154,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/multiPassword" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/sealOfHans"
+        android:layout_width="30dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/seal_of_hans"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/multiCard"
+        app:srcCompat="@drawable/ic_seal_of_hans" />
 </androidx.constraintlayout.widget.ConstraintLayout>

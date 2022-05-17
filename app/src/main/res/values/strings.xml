@@ -8,4 +8,6 @@
     <string name="multi_user_name">User name</string>
     <string name="multi_user_password">Password</string>
     <string name="multi_game_start">Start Multiplayer Game!</string>
+    <string name="seal_of_hans">Seal of Hans!</string>
+    <string name="audio_switch">Audio</string>
 </resources>

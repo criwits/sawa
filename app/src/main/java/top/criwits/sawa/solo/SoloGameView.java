@@ -32,6 +32,7 @@ import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.GameClock;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.Kinematics;
+import top.criwits.sawa.config.Media;
 import top.criwits.sawa.config.Probability;
 import top.criwits.sawa.prop.AbstractProp;
 import top.criwits.sawa.utils.ImageManager;
@@ -41,7 +42,7 @@ import top.criwits.sawa.utils.RandomGenerator;
  * GameView
  * 是游戏的主 View
  */
-public class GameView extends SurfaceView implements
+public class SoloGameView extends SurfaceView implements
         SurfaceHolder.Callback, Runnable {
 
     private int backgroundOffset = 0;
@@ -69,7 +70,7 @@ public class GameView extends SurfaceView implements
      * @param screenHeight
      * @param screenWidth
      */
-    public GameView(Context context, int screenHeight, int screenWidth) {
+    public SoloGameView(Context context, int screenHeight, int screenWidth) {
         super(context);
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
@@ -149,7 +150,7 @@ public class GameView extends SurfaceView implements
         }
 
         // 画背景
-        drawBackground(ImageManager.BG_IMG, backgroundOffset, canvas, paint);
+        drawBackground(Media.backgroudImage, backgroundOffset, canvas, paint);
 
         // 依次画四种实体
         for (int i = 0; i < enemyBullets.size(); i++) {
