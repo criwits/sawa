@@ -3,6 +3,7 @@ package top.criwits.sawa.media;
 import android.content.res.*;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import top.criwits.sawa.aircraft.HeroAircraft;
 import top.criwits.sawa.aircraft.MobEnemy;
 import top.criwits.sawa.bullet.EnemyBullet;
 import top.criwits.sawa.bullet.HeroBullet;
+import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.prop.BloodProp;
 import top.criwits.sawa.prop.BombProp;
 import top.criwits.sawa.prop.BulletProp;
@@ -80,5 +82,14 @@ public class ImageManager {
         return get(obj.getClass().getName());
     }
 
+    public static void reSizeAllBGs() {
+        Matrix matrix = new Matrix();
+        matrix.postScale((float) Graphics.scalingFactor, (float) Graphics.scalingFactor);
+        BG_IMG = Bitmap.createBitmap(BG_IMG, 0, 0, BG_IMG.getWidth(), BG_IMG.getHeight(), matrix, true);
+        BG2_IMG = Bitmap.createBitmap(BG2_IMG, 0, 0, BG2_IMG.getWidth(), BG2_IMG.getHeight(), matrix, true);
+        BG3_IMG = Bitmap.createBitmap(BG3_IMG, 0, 0, BG3_IMG.getWidth(), BG3_IMG.getHeight(), matrix, true);
+        BG4_IMG = Bitmap.createBitmap(BG4_IMG, 0, 0, BG4_IMG.getWidth(), BG4_IMG.getHeight(), matrix, true);
+        BG5_IMG = Bitmap.createBitmap(BG5_IMG, 0, 0, BG5_IMG.getWidth(), BG5_IMG.getHeight(), matrix, true);
+    }
 
 }

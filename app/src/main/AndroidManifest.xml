@@ -23,10 +23,12 @@
             android:exported="false"
             android:hardwareAccelerated="true">
         </activity>
+
         <service
             android:name=".media.MusicService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

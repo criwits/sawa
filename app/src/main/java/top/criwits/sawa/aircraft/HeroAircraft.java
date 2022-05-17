@@ -23,9 +23,7 @@ public class HeroAircraft extends AbstractAircraft {
     private static HeroAircraft instance;
     /** Initialisation function **/
     public static synchronized void loadInstance(int locationX, int locationY, int speedX, int speedY, int hp) {
-        if (instance == null) {
-            instance = new HeroAircraft(locationX, locationY, speedX, speedY, hp);
-        }
+        instance = new HeroAircraft(locationX, locationY, speedX, speedY, hp);
     }
     /** Get instance **/
     public static HeroAircraft getInstance() {

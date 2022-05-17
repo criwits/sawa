@@ -63,23 +63,17 @@ public class SoloActivity extends AppCompatActivity {
     }
 
     /**
-     * 加载图片资源
-     */
-    private void loadImages() {
-        ImageManager.loadImages(getResources());
-    }
-
-    /**
      * onCreate() 会在这个 Activity 启动时被调用。
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadImages();
         enterFullScreenMode();
         getScreenSize();
+        ImageManager.loadImages(getResources());
         getScaleRatio();
+        ImageManager.reSizeAllBGs();
 
         // 获取难度信息
         Intent intent = getIntent();
@@ -110,13 +104,12 @@ public class SoloActivity extends AppCompatActivity {
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
     }
 
+    private int lastX, lastY;
     /**
      * 触摸控制英雄机
      * @param event
      * @return
      */
-
-    private int lastX, lastY;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

@@ -43,19 +43,11 @@ import top.criwits.sawa.utils.RandomGenerator;
 public class GameView extends SurfaceView implements
         SurfaceHolder.Callback, Runnable {
 
+    public GameLogic game;
+
     private int backgroundOffset = 0;
     private int cycleTime = 0;
-    private boolean gameOverFlag = false;
-    private int score = 0;
-    private int time = 0;
     private int mspf = 0;
-
-    /* 存放各个实体的列表 */
-    private final List<AbstractAircraft> enemyAircraft;
-    private final List<AbstractBullet> heroBullets;
-    private final List<AbstractBullet> enemyBullets;
-    private final List<AbstractProp> props;
-
 
     int screenWidth, screenHeight;
     boolean canDraw = false; //控制绘画线程的标志位
@@ -78,12 +70,6 @@ public class GameView extends SurfaceView implements
         sh = this.getHolder();
         sh.addCallback(this);
         this.setFocusable(true);
-
-        // 初始化各个 List
-        enemyAircraft = new LinkedList<>();
-        heroBullets = new LinkedList<>();
-        enemyBullets = new LinkedList<>();
-        props = new LinkedList<>();
     }
 
     /**
@@ -153,17 +139,17 @@ public class GameView extends SurfaceView implements
         drawBackground(Media.backgroudImage, backgroundOffset, canvas, paint);
 
         // 依次画四种实体
-        for (int i = 0; i < enemyBullets.size(); i++) {
-            drawFlyingObject(enemyBullets.get(i), canvas, paint);
+        for (int i = 0; i < game.getEnemyBulletsList().size(); i++) {
+            drawFlyingObject(game.getEnemyBulletsList().get(i), canvas, paint);
         }
-        for (int i = 0; i < heroBullets.size(); i++) {
-            drawFlyingObject(heroBullets.get(i), canvas, paint);
+        for (int i = 0; i < game.getHeroBulletsList().size(); i++) {
+            drawFlyingObject(game.getHeroBulletsList().get(i), canvas, paint);
         }
-        for (int i = 0; i < props.size(); i++) {
-            drawFlyingObject(props.get(i), canvas, paint);
+        for (int i = 0; i < game.getPropsList().size(); i++) {
+            drawFlyingObject(game.getPropsList().get(i), canvas, paint);
         }
-        for (int i = 0; i < enemyAircraft.size(); i++) {
-            drawFlyingObject(enemyAircraft.get(i), canvas, paint);
+        for (int i = 0; i < game.getEnemyAircraftList().size(); i++) {
+            drawFlyingObject(game.getEnemyAircraftList().get(i), canvas, paint);
         }
 
         // 画精英机
@@ -176,7 +162,7 @@ public class GameView extends SurfaceView implements
                 "fonts/IBMPlexSans-Bold.ttf");
         textPaint.setTypeface(typeface);
         textPaint.setTextSize(getResources().getDimensionPixelSize(R.dimen.scoreFontSize));
-        canvas.drawText("SCORE: " + String.valueOf(score), 40,150, textPaint);
+        canvas.drawText("SCORE: " + String.valueOf(game.getScore()), 40,150, textPaint);
         canvas.drawText("HP: " + String.valueOf(HeroAircraft.getInstance().getHp()), 40,220, textPaint);
         textPaint.setColor(Color.GRAY);
         canvas.drawText("MSPF: " + String.valueOf(mspf) + " ms", 40,290, textPaint);
@@ -188,66 +174,20 @@ public class GameView extends SurfaceView implements
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void run() {
-        // 精英机加载
-        HeroAircraft.loadInstance(
-                Graphics.screenWidth / 2,
-                Graphics.screenHeight - ImageManager.HERO_IMG.getHeight() ,
-                0, 0, AircraftHP.heroAircraftHP);
-
+        game = new GameLogic();
         // 游戏主循环
         while (canDraw){
-
             long startTime = System.currentTimeMillis();
-
+            // 执行游戏逻辑
             if (timeCountAndNewCycleJudge()) {
-                // Spawn of enemies if can
-                if (enemyAircraft.size() < Difficulty.enemyMaxNumber) {
-                    AircraftFactory newAircraftFactory;
-                    int speedX;
-                    int hp;
-                    // Decide which type of enemy should be spawned
-                    if (Math.random() < Probability.eliteProbability) {
-                        newAircraftFactory = new EliteEnemyFactory();
-                        speedX = RandomGenerator.nonZeroGenerator(Kinematics.enemySpeedX);
-                        hp = AircraftHP.eliteEnemyHP;
-                    } else {
-                        newAircraftFactory = new MobEnemyFactory();
-                        speedX = 0;
-                        hp = AircraftHP.mobEnemyHP;
-                    }
-                    enemyAircraft.add(newAircraftFactory.createAircraft(
-                            (int) (Math.random() * (Graphics.screenWidth - ImageManager.MOB_IMG.getWidth())),
-                            (int) (Math.random() * Graphics.screenHeight * 0.2),
-                            speedX,
-                            Kinematics.enemySpeedY,
-                            hp
-                    ));
-                }
-                // Shoot
-                shootAction();
+                game.doAtEveryCycle();
             }
-            // Increase difficulty
-            difficultyIncrease();
-            // Boss Generation
-            bossGenerateAction(score, enemyAircraft);
-            // Bullet move
-            bulletsMoveAction();
-            // Aircraft move
-            aircraftsMoveAction();
-            // props move
-            propsMoveAction();
-            // Crash check
-            crashCheckAction();
-            // Post process
-            postProcessAction();
-
+            game.doAtEveryTick();
             // 绘图
             synchronized (sh){
                 draw();
             }
-
             long endTime = System.currentTimeMillis();
-
             try {
                 Thread.sleep(Math.max(GameClock.timeInterval - (endTime - startTime), 0));
                 mspf = (endTime - startTime) > GameClock.timeInterval ? (int)(endTime - startTime) :
@@ -280,112 +220,6 @@ public class GameView extends SurfaceView implements
             return false;
         }
     }
-
-    protected void bossGenerateAction(int score, List<AbstractAircraft> enemyAircrafts) {};
-
-    private void shootAction() {
-        // Enemies
-        for (AbstractAircraft enemyAircraft : enemyAircraft) {
-            enemyBullets.addAll(enemyAircraft.shoot());
-        }
-        // Hero
-        heroBullets.addAll(HeroAircraft.getInstance().shoot());
-    }
-
-    private void bulletsMoveAction() {
-        for (AbstractBullet bullet : heroBullets) {
-            bullet.forward();
-        }
-        for (AbstractBullet bullet : enemyBullets) {
-            bullet.forward();
-        }
-    }
-
-    private void aircraftsMoveAction() {
-        for (AbstractAircraft enemyAircraft : enemyAircraft) {
-            enemyAircraft.forward();
-        }
-    }
-
-    private void propsMoveAction() {
-        for (AbstractProp prop : props) {
-            prop.forward();
-        }
-    }
-
-
-    /** Hit box detection */
-    private void crashCheckAction() {
-        // Enemy bullets
-        for (AbstractBullet bullet : enemyBullets) {
-            if (bullet.notValid()) {
-                continue;
-            }
-            if(HeroAircraft.getInstance().crash(bullet)) {
-                HeroAircraft.getInstance().decreaseHp(bullet.getPower());
-                bullet.vanish();
-            }
-        }
-
-        // Player bullets
-        for (AbstractBullet bullet : heroBullets) {
-            if (bullet.notValid()) {
-                continue;
-            }
-            for (AbstractAircraft enemyAircraft : enemyAircraft) {
-                if (enemyAircraft.notValid()) {
-                    continue;
-                }
-                if (enemyAircraft.crash(bullet)) {
-                    SoundHelper.playBulletHit();
-                    enemyAircraft.decreaseHp(bullet.getPower());
-                    bullet.vanish();
-                }
-
-            }
-        }
-
-        // Props spawn
-        for (AbstractAircraft enemyAircraft : enemyAircraft) {
-            if (enemyAircraft.notValid()) {
-                // Add score!
-                score += enemyAircraft.addScore();
-                props.addAll(enemyAircraft.generateProp());
-            }
-        }
-
-        // Enemy and Hero crash
-        for (AbstractAircraft enemyAircraft : enemyAircraft) {
-            if (enemyAircraft.crash(HeroAircraft.getInstance()) || HeroAircraft.getInstance().crash(enemyAircraft)) {
-                enemyAircraft.vanish();
-                HeroAircraft.getInstance().decreaseHp(Integer.MAX_VALUE);
-            }
-        }
-
-        for (AbstractProp prop: props) {
-            if (HeroAircraft.getInstance().crash(prop)) {
-                score += prop.action(HeroAircraft.getInstance(), enemyAircraft, enemyBullets);
-                prop.vanish();
-            }
-        }
-
-    }
-
-    /**
-     * Post process
-     *   - Remove invalid enemies
-     *   - Remove invalid bullets
-     *   - Remove invalid & used props
-     */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void postProcessAction() {
-        enemyBullets.removeIf(AbstractFlyingObject::notValid);
-        heroBullets.removeIf(AbstractFlyingObject::notValid);
-        enemyAircraft.removeIf(AbstractFlyingObject::notValid);
-        props.removeIf(AbstractFlyingObject::notValid);
-    }
-
-    protected void difficultyIncrease() {}
 
     public void moveHeroAircraft(int deltaX, int deltaY) {
         HeroAircraft.getInstance().move(deltaX, deltaY);
