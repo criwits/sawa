@@ -80,29 +80,13 @@ public class GameView extends SurfaceView implements
      * @param paint
      */
     private void drawBackground(@NonNull Bitmap bgimg, int bgOffset, @NonNull Canvas canvas, Paint paint) {
-
-        /**
+        /*
          * 因为现在的手机都是全面屏，
          * 需要 3 张图来拼背景。
          */
-
-//        Rect bgSrcRect = new Rect(0, 0, bgimg.getWidth(), bgimg.getHeight());
-//        Rect bgMidRect = new Rect(0, bgOffset, Graphics.screenWidth,
-//                (int)(bgimg.getHeight() * Graphics.scalingFactor) + bgOffset);
-//        Rect bgUpperRect = new Rect(0, bgOffset - (int)(bgimg.getHeight() * Graphics.scalingFactor),
-//                Graphics.screenWidth, bgOffset);
-//        Rect bgBottomRect = new Rect(0, (int)(bgimg.getHeight() * Graphics.scalingFactor) + bgOffset,
-//                Graphics.screenWidth, 2 * (int)(bgimg.getHeight() * Graphics.scalingFactor) + bgOffset);
-//        canvas.drawBitmap(bgimg, bgSrcRect, bgMidRect, paint);
-//        canvas.drawBitmap(bgimg, bgSrcRect, bgUpperRect, paint);
-//        canvas.drawBitmap(bgimg, bgSrcRect, bgBottomRect, paint);
-
         canvas.drawBitmap(bgimg, 0, backgroundOffset - bgimg.getHeight(), paint);
         canvas.drawBitmap(bgimg, 0, backgroundOffset, paint);
         canvas.drawBitmap(bgimg, 0, backgroundOffset + bgimg.getHeight(), paint);
-//        paint.setColor(Color.BLACK);
-//        canvas.drawRect(0, 0, screenWidth, screenHeight, paint);
-
         backgroundOffset += Kinematics.backgroundShiftPerFrame;
         if (backgroundOffset >= bgimg.getHeight()) {
             backgroundOffset = 0;

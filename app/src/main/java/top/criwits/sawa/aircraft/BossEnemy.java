@@ -20,6 +20,10 @@ public class BossEnemy extends AbstractAircraft{
         super(locationX, locationY, speedX, speedY, hp);
     }
 
+    public static void resetBoss() {
+        instance = null;
+    }
+
     public static boolean isBossActive () {
         if (instance == null) {
             return false;

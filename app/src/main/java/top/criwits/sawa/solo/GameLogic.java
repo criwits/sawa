@@ -9,6 +9,7 @@ import java.util.List;
 
 import top.criwits.sawa.aircraft.AbstractAircraft;
 import top.criwits.sawa.aircraft.AircraftFactory;
+import top.criwits.sawa.aircraft.BossEnemy;
 import top.criwits.sawa.aircraft.EliteEnemyFactory;
 import top.criwits.sawa.aircraft.HeroAircraft;
 import top.criwits.sawa.aircraft.MobEnemyFactory;
@@ -26,6 +27,9 @@ import top.criwits.sawa.utils.RandomGenerator;
 
 public class GameLogic {
     private int score = 0;
+    private int lastTimeBossSpawned = 0;
+    private int difficultyIncreaseCount = 0;
+
     private final List<AbstractAircraft> enemyAircraft;
     private final List<AbstractBullet> heroBullets;
     private final List<AbstractBullet> enemyBullets;
@@ -63,6 +67,8 @@ public class GameLogic {
                 Graphics.screenWidth / 2,
                 Graphics.screenHeight - ImageManager.HERO_IMG.getHeight() ,
                 0, 0, AircraftHP.heroAircraftHP);
+
+        BossEnemy.resetBoss();
     }
 
     public void doAtEveryCycle() {
@@ -97,7 +103,7 @@ public class GameLogic {
         // Increase difficulty
         difficultyIncrease();
         // Boss Generation
-        bossGenerateAction(score, enemyAircraft);
+        bossGenerateAction();
         // Bullet move
         bulletsMoveAction();
         // Aircraft move
@@ -110,7 +116,26 @@ public class GameLogic {
         postProcessAction();
     }
 
-    protected void bossGenerateAction(int score, List<AbstractAircraft> enemyAircrafts) {};
+    private void bossGenerateAction() {
+        if (Difficulty.difficulty != 0) {
+            if (score - lastTimeBossSpawned > Difficulty.bossScoreThreshold) {
+                lastTimeBossSpawned = score;
+                if (!BossEnemy.isBossActive()) {
+                    enemyAircraft.add(BossEnemy.summonBoss((int) (Math.random() * (Graphics.screenWidth - 200)),
+                            Kinematics.bossLocationY,
+                            RandomGenerator.nonZeroGenerator(Kinematics.bossSpeedX),
+                            0,
+                            AircraftHP.bossEnemyHP));
+                    // Increase boss HP
+                    AircraftHP.bossEnemyHP += Difficulty.bossHpIncrease;
+                    if (Difficulty.difficulty == 2) {
+                        System.out.printf("Boss generated. Next HP: %d\n", AircraftHP.bossEnemyHP);
+                    }
+                }
+
+            }
+        }
+    };
 
     private void shootAction() {
         // Enemies
@@ -214,7 +239,25 @@ public class GameLogic {
         props.removeIf(AbstractFlyingObject::notValid);
     }
 
-    protected void difficultyIncrease() {}
+    private void difficultyIncrease() {
+        if (Difficulty.difficulty != 0) {
+            difficultyIncreaseCount++;
+            if (difficultyIncreaseCount == Difficulty.difficultyIncreaseCycleCount) {
+                difficultyIncreaseCount = 0;
+                // Decrease boss threshold
+                if (Difficulty.bossScoreThreshold > Difficulty.bossScoreThresholdMinimum) {
+                    Difficulty.bossScoreThreshold -= Difficulty.bossScoreThresholdDecrease;
+                }
+                // Elite probability
+                if (Probability.eliteProbability < Difficulty.eliteEnemyProbabilityMaximum) {
+                    Probability.eliteProbability += Difficulty.eliteEnemyProbabilityIncrease;
+                }
+                Kinematics.enemySpeedY += Difficulty.enemySpeedYIncrease;
+                System.out.printf("Boss HP: %d, Boss score threshold: %d, Elite probability: %f, Enemy Speed Y: %d\n",
+                        AircraftHP.bossEnemyHP, Difficulty.bossScoreThreshold, Probability.eliteProbability, Kinematics.enemySpeedY);
+            }
+        }
+    }
 
     public void moveHeroAircraft(int deltaX, int deltaY) {
         HeroAircraft.getInstance().move(deltaX, deltaY);
