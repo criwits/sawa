@@ -155,7 +155,7 @@ public class GameView extends SurfaceView implements
     }
 
     
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void run() {
         game = new GameLogic();
