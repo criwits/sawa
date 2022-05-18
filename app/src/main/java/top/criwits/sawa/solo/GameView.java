@@ -112,7 +112,7 @@ public class GameView extends SurfaceView implements
     /**
      * 每帧的绘图函数
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void draw(){
         canvas = sh.lockHardwareCanvas();
         if(sh == null || canvas == null){
