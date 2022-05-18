@@ -6,6 +6,7 @@ import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.Kinematics;
 import top.criwits.sawa.config.Probability;
+import top.criwits.sawa.media.SoundHelper;
 import top.criwits.sawa.prop.*;
 
 
@@ -50,7 +51,7 @@ public class BossEnemy extends AbstractAircraft{
             return null;
         } else {
             // when boss spawns the BGM should play
-            // PlaySound.startPlayBossBGM();
+            SoundHelper.startPlayingBOSSBGM();
             instance = new BossEnemy(locationX, locationY, speedX, speedY, hp);
             return getInstance();
         }
@@ -80,10 +81,10 @@ public class BossEnemy extends AbstractAircraft{
                 return propList;
             }
             propList.add(newPropFactory.createProp(
-                    this.getLocationX() + (int)(Math.random() * 100 - 50),
-                    this.getLocationY() + (int)(Math.random() * 100 - 50),
+                    this.getLocationX() + Kinematics.getRealPixel((int)(Math.random() * 50 - 25)),
+                    this.getLocationY() + Kinematics.getRealPixel((int)(Math.random() * 50 - 25)),
                     0,
-                    Kinematics.enemySpeedY));
+                    Kinematics.getRealPixel(Kinematics.enemySpeedY)));
         }
         return propList;
     }
@@ -97,7 +98,7 @@ public class BossEnemy extends AbstractAircraft{
     public void vanish() {
         isValid = false;
         // when boss dies the BGM of boss should stop
-        // PlaySound.stopPlayBossBGM();
+        SoundHelper.stopPlayingBOSSBGM();
     }
 
 }

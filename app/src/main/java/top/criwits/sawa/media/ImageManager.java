@@ -84,7 +84,7 @@ public class ImageManager {
 
     public static void reSizeAllBGs() {
         Matrix matrix = new Matrix();
-        matrix.postScale((float) Graphics.scalingFactor, (float) Graphics.scalingFactor);
+        matrix.postScale((float) Graphics.imageScalingFactor, (float) Graphics.imageScalingFactor);
         BG_IMG = Bitmap.createBitmap(BG_IMG, 0, 0, BG_IMG.getWidth(), BG_IMG.getHeight(), matrix, true);
         BG2_IMG = Bitmap.createBitmap(BG2_IMG, 0, 0, BG2_IMG.getWidth(), BG2_IMG.getHeight(), matrix, true);
         BG3_IMG = Bitmap.createBitmap(BG3_IMG, 0, 0, BG3_IMG.getWidth(), BG3_IMG.getHeight(), matrix, true);

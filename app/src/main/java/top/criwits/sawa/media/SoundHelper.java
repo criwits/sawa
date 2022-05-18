@@ -36,12 +36,12 @@ public class SoundHelper {
         soundID.put(3, soundPool.load(context, R.raw.bullet_hit, 1));
         soundID.put(4, soundPool.load(context, R.raw.game_over, 1));
         soundID.put(5, soundPool.load(context, R.raw.get_supply, 1));
-        player = MediaPlayer.create(context, R.raw.bgm_boss);
-        player.setLooping(true);
     }
 
     public static void startPlayingBOSSBGM() {
         if (Media.music) {
+            player = MediaPlayer.create(context, R.raw.bgm_boss);
+            player.setLooping(true);
             player.start();
         }
     }
@@ -49,7 +49,8 @@ public class SoundHelper {
     public static void stopPlayingBOSSBGM() {
         if (Media.music) {
             player.stop();
-            player.reset();
+            player.release();
+            player = null;
         }
     }
 
@@ -82,7 +83,7 @@ public class SoundHelper {
     }
 
     public static void release() {
-        if (player != null) {
+        if (Media.music && player != null) {
             player.release();
             player = null;
         }

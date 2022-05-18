@@ -80,7 +80,7 @@ public class GameLogic {
             // Decide which type of enemy should be spawned
             if (Math.random() < Probability.eliteProbability) {
                 newAircraftFactory = new EliteEnemyFactory();
-                speedX = RandomGenerator.nonZeroGenerator(Kinematics.enemySpeedX);
+                speedX = RandomGenerator.nonZeroGenerator(Kinematics.getRealPixel(Kinematics.enemySpeedX));
                 hp = AircraftHP.eliteEnemyHP;
             } else {
                 newAircraftFactory = new MobEnemyFactory();
@@ -91,7 +91,7 @@ public class GameLogic {
                     (int) (Math.random() * (Graphics.screenWidth - ImageManager.MOB_IMG.getWidth())),
                     (int) (Math.random() * Graphics.screenHeight * 0.2),
                     speedX,
-                    Kinematics.enemySpeedY,
+                    Kinematics.getRealPixel(Kinematics.enemySpeedY),
                     hp
             ));
         }
@@ -122,8 +122,8 @@ public class GameLogic {
                 lastTimeBossSpawned = score;
                 if (!BossEnemy.isBossActive()) {
                     enemyAircraft.add(BossEnemy.summonBoss((int) (Math.random() * (Graphics.screenWidth - 200)),
-                            Kinematics.bossLocationY,
-                            RandomGenerator.nonZeroGenerator(Kinematics.bossSpeedX),
+                            Kinematics.getRealPixel(Kinematics.bossLocationY),
+                            RandomGenerator.nonZeroGenerator(Kinematics.getRealPixel(Kinematics.bossSpeedX)),
                             0,
                             AircraftHP.bossEnemyHP));
                     // Increase boss HP

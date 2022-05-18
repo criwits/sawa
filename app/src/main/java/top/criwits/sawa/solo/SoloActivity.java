@@ -18,7 +18,6 @@ import top.criwits.sawa.config.LoadConfig;
 import top.criwits.sawa.config.Media;
 import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.media.MusicService;
-import top.criwits.sawa.media.SoundHelper;
 
 public class SoloActivity extends AppCompatActivity {
 
@@ -35,12 +34,14 @@ public class SoloActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         Graphics.screenHeight = dm.heightPixels;
         Graphics.screenWidth = dm.widthPixels;
+        System.out.println(Graphics.screenHeight + " * " + Graphics.screenWidth);
     }
 
     private void getScaleRatio() {
         // 计算缩放倍率
-        Graphics.scalingFactor = (double)Graphics.screenWidth / (double)ImageManager.BG_IMG.getWidth();
-        System.out.println("Screen scale ratio:" + Graphics.scalingFactor);
+        Graphics.imageScalingFactor = (double)Graphics.screenWidth / (double)ImageManager.BG_IMG.getWidth();
+        Graphics.pixelScalingFactor = (double)Graphics.screenWidth / (double)512;
+        System.out.println("Screen scale ratio:" + Graphics.imageScalingFactor);
     }
 
     /**

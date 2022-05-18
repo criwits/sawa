@@ -7,5 +7,7 @@ public class Graphics {
     public static int screenWidth;
     public static int screenHeight;
 
-    public static double scalingFactor;
+    public static double imageScalingFactor;
+    public static double pixelScalingFactor;
+
 }

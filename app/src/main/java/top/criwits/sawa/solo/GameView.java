@@ -87,7 +87,7 @@ public class GameView extends SurfaceView implements
         canvas.drawBitmap(bgimg, 0, backgroundOffset - bgimg.getHeight(), paint);
         canvas.drawBitmap(bgimg, 0, backgroundOffset, paint);
         canvas.drawBitmap(bgimg, 0, backgroundOffset + bgimg.getHeight(), paint);
-        backgroundOffset += Kinematics.backgroundShiftPerFrame;
+        backgroundOffset += Kinematics.getRealPixel(Kinematics.backgroundShiftPerFrame);
         if (backgroundOffset >= bgimg.getHeight()) {
             backgroundOffset = 0;
         }
@@ -146,10 +146,10 @@ public class GameView extends SurfaceView implements
                 "fonts/IBMPlexSans-Bold.ttf");
         textPaint.setTypeface(typeface);
         textPaint.setTextSize(getResources().getDimensionPixelSize(R.dimen.scoreFontSize));
-        canvas.drawText("SCORE: " + String.valueOf(game.getScore()), 40,150, textPaint);
-        canvas.drawText("HP: " + String.valueOf(HeroAircraft.getInstance().getHp()), 40,220, textPaint);
+        canvas.drawText("SCORE: " + String.valueOf(game.getScore()), Kinematics.getRealPixel(20), Kinematics.getRealPixel(75), textPaint);
+        canvas.drawText("HP: " + String.valueOf(HeroAircraft.getInstance().getHp()), Kinematics.getRealPixel(20), Kinematics.getRealPixel(110), textPaint);
         textPaint.setColor(Color.GRAY);
-        canvas.drawText("MSPF: " + String.valueOf(mspf) + " ms", 40,290, textPaint);
+        canvas.drawText("MSPF: " + String.valueOf(mspf) + " ms", Kinematics.getRealPixel(20), Kinematics.getRealPixel(145), textPaint);
 
         sh.unlockCanvasAndPost(canvas);
     }

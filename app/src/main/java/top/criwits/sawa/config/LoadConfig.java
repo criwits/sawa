@@ -16,7 +16,7 @@ public class LoadConfig {
         Difficulty.enemyBulletPower = 20;
         Difficulty.bossBulletPower = 40;
         Difficulty.enemySpeedYIncrease = 0;
-        Kinematics.enemySpeedY = 10;
+        Kinematics.enemySpeedY = 5;
 
     }
 
@@ -30,7 +30,7 @@ public class LoadConfig {
         Difficulty.enemyBulletPower = 30;
         Difficulty.bossBulletPower = 45;
         Difficulty.enemySpeedYIncrease = 0;
-        Kinematics.enemySpeedY = 12;
+        Kinematics.enemySpeedY = 6;
     }
 
     public static void loadHardMode() {
@@ -41,6 +41,6 @@ public class LoadConfig {
         Difficulty.enemyBulletPower = 35;
         Difficulty.bossBulletPower = 50;
         Difficulty.enemySpeedYIncrease = 1;
-        Kinematics.enemySpeedY = 12;
+        Kinematics.enemySpeedY = 6;
     }
 }
