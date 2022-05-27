@@ -10,4 +10,7 @@
     <string name="multi_game_start">Start Multiplayer Game!</string>
     <string name="seal_of_hans">Seal of Hans!</string>
     <string name="audio_switch">Sound</string>
+    <string name="game_over_hint">Game Over!</string>
+    <string name="enroll">Enroll</string>
+    <string name="enroll_cancel">Cancel</string>
 </resources>

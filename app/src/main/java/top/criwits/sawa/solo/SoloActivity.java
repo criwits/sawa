@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import top.criwits.sawa.ranking.NameEnrollActivity;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.LoadConfig;
 import top.criwits.sawa.config.Media;
@@ -130,7 +131,7 @@ public class SoloActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
-            this.finish();
+             this.finish();
         }
         return true;
     }
@@ -139,5 +140,14 @@ public class SoloActivity extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         unbindService(conn);
+    }
+
+    public void gameOver(int score, int difficulty) {
+        this.finish();
+        System.out.println("GAME OVER");
+        Intent intent = new Intent(this, NameEnrollActivity.class);
+        intent.putExtra("top.criwits.sawa.SCORE", score);
+        intent.putExtra("top.criwits.sawa.DIFFICULTY", difficulty);
+        startActivity(intent);
     }
 }

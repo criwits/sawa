@@ -35,6 +35,8 @@ public class GameLogic {
     private final List<AbstractBullet> enemyBullets;
     private final List<AbstractProp> props;
 
+    private boolean gameOver = false;
+
     public int getScore() {
         return score;
     }
@@ -114,6 +116,10 @@ public class GameLogic {
         crashCheckAction();
         // Post process
         postProcessAction();
+
+        if (HeroAircraft.getInstance().getHp() <= 0) {
+            gameOver = true;
+        }
     }
 
     private void bossGenerateAction() {
@@ -263,6 +269,9 @@ public class GameLogic {
         HeroAircraft.getInstance().move(deltaX, deltaY);
     }
 
+    public boolean getGameOver() {
+        return gameOver;
+    }
 
 
 }

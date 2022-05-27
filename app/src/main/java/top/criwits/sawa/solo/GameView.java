@@ -136,7 +136,7 @@ public class GameView extends SurfaceView implements
             drawFlyingObject(game.getEnemyAircraftList().get(i), canvas, paint);
         }
 
-        // 画精英机
+        // 画英雄机
         drawFlyingObject(HeroAircraft.getInstance(), canvas, paint);
 
         // 分数
@@ -172,6 +172,9 @@ public class GameView extends SurfaceView implements
                 draw();
             }
             long endTime = System.currentTimeMillis();
+            if (game.getGameOver()) {
+                canDraw = false;
+            }
             try {
                 Thread.sleep(Math.max(GameClock.timeInterval - (endTime - startTime), 0));
                 mspf = (endTime - startTime) > GameClock.timeInterval ? (int)(endTime - startTime) :
@@ -180,6 +183,10 @@ public class GameView extends SurfaceView implements
                 e.printStackTrace();
             }
         }
+
+        // Game Over
+        SoloActivity activity = (SoloActivity) getContext();
+        activity.gameOver(game.getScore(), Difficulty.difficulty);
     }
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {

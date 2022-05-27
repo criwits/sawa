@@ -68,7 +68,6 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
 
-
     public void startSoloGame(View view) {
         Intent intent = new Intent(this, SoloActivity.class);
         intent.putExtra("top.criwits.sawa.DIFFICULTY_INDEX", difficulty);

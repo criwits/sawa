@@ -10,25 +10,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SimpleAircraftWar">
         <activity
+            android:name=".ranking.NameEnrollActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ranking.RankingActivity"
+            android:exported="false" />
+        <activity
             android:name=".welcome.WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".solo.SoloActivity"
             android:exported="false"
-            android:hardwareAccelerated="true">
-        </activity>
+            android:hardwareAccelerated="true" />
 
         <service
             android:name=".media.MusicService"
             android:enabled="true"
-            android:exported="false">
-        </service>
+            android:exported="false" />
     </application>
 
 </manifest>
