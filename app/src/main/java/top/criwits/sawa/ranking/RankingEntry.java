@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "rankings")
 public class RankingEntry {
     @PrimaryKey(autoGenerate = true)
-    @NonNull
     public int id;
     @ColumnInfo(name = "difficulty")
     public int difficulty;
