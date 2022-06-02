@@ -43,4 +43,8 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
+    /**
+     * Java-Websocket
+     */
+    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
 }
