@@ -10,11 +10,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+
 import top.criwits.sawa.R;
 import top.criwits.sawa.config.Media;
+import top.criwits.sawa.network.WSService;
 import top.criwits.sawa.solo.SoloActivity;
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -72,6 +79,18 @@ public class WelcomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SoloActivity.class);
         intent.putExtra("top.criwits.sawa.DIFFICULTY_INDEX", difficulty);
         startActivity(intent);
+    }
+
+    public void startMultiGame(View view) {
+        // 获取服务器地址、用户名、密码
+        EditText address = (EditText) findViewById(R.id.multiServerAddress);
+        EditText username = (EditText) findViewById(R.id.multiUserName);
+        EditText password = (EditText) findViewById(R.id.multiPassword);
+
+        Intent intent = new Intent(this, WSService.class);
+        intent.putExtra("top.criwits.sawa.MULTIADDR", address.getText().toString());
+        startService(intent);
+
     }
 
 }
