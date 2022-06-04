@@ -2,7 +2,11 @@ package top.criwits.sawa.network;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -22,11 +26,27 @@ public class WSService extends Service {
                 System.out.println("WebSocket connection established!");
                 Intent intent = new Intent("top.criwits.sawa.CONNECTION");
                 intent.putExtra("top.criwits.sawa.CONNSTATUS", true);
+                sendBroadcast(intent);
             }
 
             @Override
             public void onMessage(String message) {
-
+                JSONObject msg = JSON.parseObject(message);
+                switch (msg.getString("type")) {
+                    case "user_query_response":
+                    case "room_info_response":
+                    case "create_room_response":
+                    case "join_room_response":
+                    case "room_ready":
+                    case "game_start":
+                        System.out.println("Received message: " + message);
+                        Intent intent = new Intent("top.criwits.sawa.MESSAGE");
+                        intent.putExtra("top.criwits.sawa.MESSAGE_RAW", message);
+                        sendBroadcast(intent);
+                        break;
+                    default:
+                        break;
+                }
             }
 
             @Override
@@ -34,6 +54,7 @@ public class WSService extends Service {
                 System.out.println("WebSocket connection closed for reason: " + reason);
                 Intent intent = new Intent("top.criwits.sawa.CONNECTION");
                 intent.putExtra("top.criwits.sawa.CONNSTATUS", false);
+                sendBroadcast(intent);
                 WSService.super.onDestroy();
             }
 
@@ -50,7 +71,14 @@ public class WSService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        System.out.println("Successfully bound service!");
+        return new WSBinder();
+    }
+
+    public class WSBinder extends Binder {
+        public void sendMessage(String msg) {
+            client.send(msg);
+        }
     }
 
     @Override

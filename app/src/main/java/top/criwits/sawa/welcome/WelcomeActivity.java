@@ -3,8 +3,14 @@ package top.criwits.sawa.welcome;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,6 +20,8 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
 
+import com.alibaba.fastjson.JSONObject;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -21,12 +29,14 @@ import java.net.URI;
 
 import top.criwits.sawa.R;
 import top.criwits.sawa.config.Media;
+import top.criwits.sawa.network.WSConn;
 import top.criwits.sawa.network.WSService;
 import top.criwits.sawa.solo.SoloActivity;
 
 public class WelcomeActivity extends AppCompatActivity {
 
     private int difficulty = 0;
+    WSConn conn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +94,35 @@ public class WelcomeActivity extends AppCompatActivity {
     public void startMultiGame(View view) {
         // 获取服务器地址、用户名、密码
         EditText address = (EditText) findViewById(R.id.multiServerAddress);
-        EditText username = (EditText) findViewById(R.id.multiUserName);
-        EditText password = (EditText) findViewById(R.id.multiPassword);
+
 
         Intent intent = new Intent(this, WSService.class);
         intent.putExtra("top.criwits.sawa.MULTIADDR", address.getText().toString());
         startService(intent);
+        conn = new WSConn();
+        bindService(intent, conn, BIND_AUTO_CREATE);
 
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getBooleanExtra("top.criwits.sawa.CONNSTATUS", false)) {
+                    userQuery();
+                }
+                unregisterReceiver(this);
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("top.criwits.sawa.CONNECTION");
+        registerReceiver(receiver, filter);
+
+    }
+
+    private void userQuery() {
+        EditText username = (EditText) findViewById(R.id.multiUserName);
+        EditText password = (EditText) findViewById(R.id.multiPassword);
+        conn.getBinder().sendMessage("{ \"type\": \"user_query\", " +
+                "\"username\": \"" + username.getText().toString() + "\",\n" +
+                "\"password\": \"" + password.getText().toString() + "\" }");
     }
 
 }

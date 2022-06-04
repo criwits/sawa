@@ -47,4 +47,10 @@ dependencies {
      * Java-Websocket
      */
     implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+
+    /**
+     * FastJSON
+     */
+    implementation 'com.alibaba:fastjson:1.2.61'
+    implementation 'com.alibaba:fastjson:1.2.61.android'
 }
