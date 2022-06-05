@@ -13,4 +13,9 @@
     <string name="game_over_hint">Game Over!</string>
     <string name="enroll">Enroll</string>
     <string name="enroll_cancel">Cancel</string>
+    <string name="room_list">Choose a Room…</string>
+    <string name="room_id">Room ID: </string>
+    <string name="difficulty">Difficulty: </string>
+    <string name="your_room_id">Your Room ID is</string>
+    <string name="waiting">Waiting for teammate…</string>
 </resources>

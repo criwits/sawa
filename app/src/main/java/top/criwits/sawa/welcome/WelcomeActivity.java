@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import org.java_websocket.client.WebSocketClient;
@@ -29,14 +30,13 @@ import java.net.URI;
 
 import top.criwits.sawa.R;
 import top.criwits.sawa.config.Media;
-import top.criwits.sawa.network.WSConn;
+import top.criwits.sawa.multi.RoomSelectActivity;
 import top.criwits.sawa.network.WSService;
 import top.criwits.sawa.solo.SoloActivity;
 
 public class WelcomeActivity extends AppCompatActivity {
 
     private int difficulty = 0;
-    WSConn conn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +99,6 @@ public class WelcomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, WSService.class);
         intent.putExtra("top.criwits.sawa.MULTIADDR", address.getText().toString());
         startService(intent);
-        conn = new WSConn();
-        bindService(intent, conn, BIND_AUTO_CREATE);
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
@@ -120,9 +118,33 @@ public class WelcomeActivity extends AppCompatActivity {
     private void userQuery() {
         EditText username = (EditText) findViewById(R.id.multiUserName);
         EditText password = (EditText) findViewById(R.id.multiPassword);
-        conn.getBinder().sendMessage("{ \"type\": \"user_query\", " +
+        WSService.getClient().send("{ \"type\": \"user_query\", " +
                 "\"username\": \"" + username.getText().toString() + "\",\n" +
                 "\"password\": \"" + password.getText().toString() + "\" }");
+
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String rawMsg = intent.getStringExtra("top.criwits.sawa.MESSAGE_RAW");
+                JSONObject msg = JSON.parseObject(rawMsg);
+                if (msg.getString("type").equals("user_query_response")) {
+                    if (msg.getInteger("uid") != -1) {
+                        startMultiActivity();
+                    }
+                }
+
+                unregisterReceiver(this);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("top.criwits.sawa.MESSAGE");
+        registerReceiver(receiver, filter);
+    }
+
+    private void startMultiActivity() {
+        Intent intent = new Intent(this, RoomSelectActivity.class);
+        startActivity(intent);
     }
 
 }

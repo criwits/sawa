@@ -12,8 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SimpleAircraftWar">
         <activity
+            android:name=".multi.WaitingActivity"
+            android:exported="false"
+            android:label="@string/waiting"/>
+        <activity
             android:name=".multi.RoomSelectActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/room_list" />
         <activity
             android:name=".ranking.NameEnrollActivity"
             android:exported="false" />
@@ -22,7 +27,8 @@
             android:exported="false" />
         <activity
             android:name=".welcome.WelcomeActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

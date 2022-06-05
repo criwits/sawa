@@ -14,7 +14,8 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 
 public class WSService extends Service {
-    public WebSocketClient client;
+
+    private static WebSocketClient client = null;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -71,19 +72,19 @@ public class WSService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        System.out.println("Successfully bound service!");
-        return new WSBinder();
-    }
-
-    public class WSBinder extends Binder {
-        public void sendMessage(String msg) {
-            client.send(msg);
-        }
+        return null;
     }
 
     @Override
     public void onDestroy() {
         client.close();
+        client = null;
         super.onDestroy();
     }
+
+    public static WebSocketClient getClient() {
+        return client;
+    }
+
+
 }
