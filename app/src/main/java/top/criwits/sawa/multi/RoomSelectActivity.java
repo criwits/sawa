@@ -30,6 +30,7 @@ import top.criwits.sawa.R;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.LoadConfig;
+import top.criwits.sawa.config.Multiple;
 import top.criwits.sawa.network.WSService;
 
 public class RoomSelectActivity extends AppCompatActivity {
@@ -133,6 +134,7 @@ public class RoomSelectActivity extends AppCompatActivity {
     }
 
     private void startGame() {
+        Multiple.isHost = false;
         Intent intent = new Intent(this, MultiActivity.class);
         startActivity(intent);
     }

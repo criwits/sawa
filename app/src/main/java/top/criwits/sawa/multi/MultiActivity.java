@@ -15,6 +15,7 @@ import android.view.View;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.LoadConfig;
 import top.criwits.sawa.config.Media;
+import top.criwits.sawa.config.Multiple;
 import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.media.MusicService;
 import top.criwits.sawa.multi.GameView;
@@ -56,6 +57,7 @@ public class MultiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Multiple.isMulti = true;
         enterFullScreenMode();
         ImageManager.loadImages(getResources());
         getScaleRatio();
