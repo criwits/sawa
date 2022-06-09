@@ -12,13 +12,10 @@ import java.util.List;
 import top.criwits.sawa.aircraft.AbstractAircraft;
 import top.criwits.sawa.aircraft.AircraftFactory;
 import top.criwits.sawa.aircraft.BossEnemy;
-import top.criwits.sawa.aircraft.EliteEnemy;
 import top.criwits.sawa.aircraft.EliteEnemyFactory;
 import top.criwits.sawa.aircraft.FriendAircraft;
 import top.criwits.sawa.aircraft.HeroAircraft;
-import top.criwits.sawa.aircraft.MobEnemy;
 import top.criwits.sawa.aircraft.MobEnemyFactory;
-import top.criwits.sawa.basic.AbstractFactory;
 import top.criwits.sawa.basic.AbstractFlyingObject;
 import top.criwits.sawa.bullet.AbstractBullet;
 import top.criwits.sawa.config.AircraftHP;
@@ -38,6 +35,7 @@ public class GameLogic {
     private int score = 0;
     private int lastTimeBossSpawned = 0;
     private int difficultyIncreaseCount = 0;
+    private int id = 0;
 
     private final List<AbstractAircraft> enemyAircraft;
     private final List<AbstractBullet> heroBullets;
@@ -82,35 +80,131 @@ public class GameLogic {
         // 精英机加载
         HeroAircraft.loadInstance(
                 Graphics.screenWidth / 2,
-                Graphics.screenHeight - ImageManager.HERO_IMG.getHeight() ,
+                Graphics.screenHeight - ImageManager.HERO_IMG.getHeight(),
                 0, 0, AircraftHP.heroAircraftHP);
 
         FriendAircraft.loadInstance(
                 Graphics.screenWidth / 2,
-                Graphics.screenHeight - ImageManager.HERO_IMG.getHeight() ,
+                Graphics.screenHeight - ImageManager.HERO_IMG.getHeight(),
                 0, 0, AircraftHP.heroAircraftHP);
 
         BossEnemy.resetBoss();
     }
 
     public void doAtEveryCycle() {
-        if (Multiple.isHost) {
-            // TODO: 生成 NPC，放自己的列表，然后上传
-        }
+
+        spawnNPCandUpload();
+
         shootAction();
     }
 
     // boolean msgFlag = false;
 
     public void doAtEveryTick() {
+
+        uploadHeroMovement();
+
+        fetchMessages();
+
+        // Increase difficulty
+        difficultyIncrease();
+        // Bullet move
+        bulletsMoveAction();
+        // Aircraft move
+        aircraftsMoveAction();
+
+        uploadEnemyOutScreen();
+        // props move
+        propsMoveAction();
+        // Crash check
+        crashCheckAction();
+        // Post process
+        postProcessAction();
+
+//        if (HeroAircraft.getInstance().getHp() <= 0) {
+//            gameOver = true;
+//        }
+    }
+
+    private void spawnNPCandUpload() {
+        if (Multiple.isHost) {
+            // Host generates enemy aircraft and uploads.
+            AircraftFactory newAircraftFactory;
+            AbstractAircraft newAircraft = null;
+            int speedX;
+            int hp;
+            // Decide which type of enemy should be spawned
+            if (Math.random() < Probability.eliteProbability) {
+                newAircraftFactory = new EliteEnemyFactory();
+                int realSpeedX = RandomGenerator.nonZeroGenerator(Kinematics.enemySpeedX);
+                speedX = Kinematics.getRealPixel(realSpeedX);
+                hp = AircraftHP.eliteEnemyHP;
+                newAircraft = newAircraftFactory.createAircraft(
+                        (int) (Math.random() * (Graphics.screenWidth - ImageManager.ELITE_IMG.getWidth())),
+                        (int) (Math.random() * Graphics.screenHeight * 0.2),
+                        speedX,
+                        Kinematics.getRealPixel(Kinematics.enemySpeedY),
+                        hp
+                );
+                newAircraft.setId(id);
+                enemyAircraft.add(newAircraft);
+                // mob = 1 means elite
+                WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 1 + ", \"id\" : " + id + " , \"location_x\": " +
+                        (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
+                        (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
+                        realSpeedX + ", \"speed_y\":" +
+                        Kinematics.enemySpeedY + ", \"hp\":" + hp + "}"
+                );
+                id++;
+
+            } else {
+                newAircraftFactory = new MobEnemyFactory();
+                speedX = 0;
+                hp = AircraftHP.mobEnemyHP;
+
+                newAircraft = newAircraftFactory.createAircraft(
+                        (int) (Math.random() * (Graphics.screenWidth - ImageManager.MOB_IMG.getWidth())),
+                        (int) (Math.random() * Graphics.screenHeight * 0.2),
+                        speedX,
+                        Kinematics.getRealPixel(Kinematics.enemySpeedY),
+                        hp
+                );
+                newAircraft.setId(id);
+                enemyAircraft.add(newAircraft);
+                // mob = 0 means mob
+                WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 0 + ", \"id\" : " + id + " , \"location_x\": " +
+                        (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
+                        (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
+                        (int) (newAircraft.getSpeedX() / Graphics.pixelScalingFactor) + ", \"speed_y\":" +
+                        Kinematics.enemySpeedY + ", \"hp\":" + hp + "}"
+                );
+                id++;
+            }
+        }
+    }
+
+    private void uploadEnemyOutScreen() {
+        if (Multiple.isHost) {
+            for (AbstractAircraft abstractAircraft : enemyAircraft) {
+                if (abstractAircraft.getLocationY() >= Graphics.screenHeight) {
+                    WSService.getClient().send("{\"type\": \"remove_aircraft\",\"remove\":" + abstractAircraft.getId() + "}");
+                }
+            }
+        }
+    }
+
+    private void uploadHeroMovement() {
         // Send movement
         // 下面这行代码是在每一帧的开始时向服务器发送位置信息的
-       //  msgFlag = !msgFlag;
-       //  if (msgFlag) {
-            WSService.getClient().send("{\"type\": \"movement\", \"new_x\": " + (int) (HeroAircraft.getInstance().getLocationX() / Graphics.pixelScalingFactor) +
-                    ", \"new_y\": " + (int) (HeroAircraft.getInstance().getLocationY() / Graphics.pixelScalingFactor) + "}");
+        //  msgFlag = !msgFlag;
+        //  if (msgFlag) {
+        WSService.getClient().send("{\"type\": \"movement\", \"new_x\": " + (int) (HeroAircraft.getInstance().getLocationX() / Graphics.pixelScalingFactor) +
+                ", \"new_y\": " + (int) (HeroAircraft.getInstance().getLocationY() / Graphics.pixelScalingFactor) + "}");
         // }
         // Fetch Messages
+    }
+
+    private void fetchMessages() {
         while (!MessageQueue.isEmpty()) {
             JSONObject msg = MessageQueue.poll();
             switch (msg.getString("type")) {
@@ -132,38 +226,28 @@ public class GameLogic {
                     }
                     assert factory != null;
                     AbstractAircraft newAircraft = factory.createAircraft(
-                            (int)(msg.getInteger("location_x") * Graphics.pixelScalingFactor),
-                            (int)(msg.getInteger("location_y") * Graphics.pixelScalingFactor),
-                            (int)(msg.getInteger("speed_x") * Graphics.pixelScalingFactor),
-                            (int)(msg.getInteger("speed_y") * Graphics.pixelScalingFactor),
+                            (int) (msg.getInteger("location_x") * Graphics.pixelScalingFactor),
+                            (int) (msg.getInteger("location_y") * Graphics.pixelScalingFactor),
+                            (int) (msg.getInteger("speed_x") * Graphics.pixelScalingFactor),
+                            (int) (msg.getInteger("speed_y") * Graphics.pixelScalingFactor),
                             msg.getInteger("hp")
                     );
                     newAircraft.setId(msg.getInteger("id"));
                     enemyAircraft.add(newAircraft);
                     break;
+                case "score":
+                    for (AbstractAircraft enemyAircraft : enemyAircraft) {
+                        if (enemyAircraft.getId() == msg.getInteger("remove")) {
+                            enemyAircraft.vanish();
+                        }
+                    }
+                    score += msg.getInteger("score");
+                    break;
                 default:
                     break;
             }
         }
-
-        // Increase difficulty
-        difficultyIncrease();
-        // Bullet move
-        bulletsMoveAction();
-        // Aircraft move
-        aircraftsMoveAction();
-        // props move
-        propsMoveAction();
-        // Crash check
-        crashCheckAction();
-        // Post process
-        postProcessAction();
-
-        if (HeroAircraft.getInstance().getHp() <= 0) {
-            gameOver = true;
-        }
     }
-
 
     private void shootAction() {
         // Enemies
@@ -180,7 +264,7 @@ public class GameLogic {
         for (AbstractBullet bullet : heroBullets) {
             bullet.forward();
         }
-        for (AbstractBullet bullet: friendBullets) {
+        for (AbstractBullet bullet : friendBullets) {
             bullet.forward();
         }
         for (AbstractBullet bullet : enemyBullets) {
@@ -201,14 +285,16 @@ public class GameLogic {
     }
 
 
-    /** Hit box detection */
+    /**
+     * Hit box detection
+     */
     private void crashCheckAction() {
         // Enemy bullets
         for (AbstractBullet bullet : enemyBullets) {
             if (bullet.notValid()) {
                 continue;
             }
-            if(HeroAircraft.getInstance().crash(bullet)) {
+            if (HeroAircraft.getInstance().crash(bullet)) {
                 HeroAircraft.getInstance().decreaseHp(bullet.getPower());
                 bullet.vanish();
             }
@@ -225,19 +311,20 @@ public class GameLogic {
                 }
                 if (enemyAircraft.crash(bullet)) {
                     SoundHelper.playBulletHit();
-                    enemyAircraft.decreaseHp(bullet.getPower());
+                    //enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
+                    WSService.getClient().send("{ \"type\" : \"damage\", \"id\":" + enemyAircraft.getId() +
+                            ", \"hp_decrease\":" + Difficulty.heroBulletPower + "}");
                 }
-
             }
         }
 
         // Friend bullets
-        for (AbstractBullet bullet: friendBullets) {
+        for (AbstractBullet bullet : friendBullets) {
             if (bullet.notValid()) {
                 continue;
             }
-            for (AbstractAircraft enemyAircraft: enemyAircraft) {
+            for (AbstractAircraft enemyAircraft : enemyAircraft) {
                 if (enemyAircraft.notValid()) {
                     continue;
                 }
@@ -249,13 +336,13 @@ public class GameLogic {
         }
 
         // Props spawn
-        for (AbstractAircraft enemyAircraft : enemyAircraft) {
-            if (enemyAircraft.notValid()) {
-                // Add score!
-                score += enemyAircraft.addScore();
-                props.addAll(enemyAircraft.generateProp());
-            }
-        }
+//        for (AbstractAircraft enemyAircraft : enemyAircraft) {
+//            if (enemyAircraft.notValid()) {
+//                // Add score!
+//                score += enemyAircraft.addScore();
+//                props.addAll(enemyAircraft.generateProp());
+//            }
+//        }
 
         // Enemy and Hero crash
         for (AbstractAircraft enemyAircraft : enemyAircraft) {
@@ -265,20 +352,20 @@ public class GameLogic {
             }
         }
 
-        for (AbstractProp prop: props) {
-            if (HeroAircraft.getInstance().crash(prop)) {
-                score += prop.action(HeroAircraft.getInstance(), enemyAircraft, enemyBullets);
-                prop.vanish();
-            }
-        }
+//        for (AbstractProp prop : props) {
+//            if (HeroAircraft.getInstance().crash(prop)) {
+//                score += prop.action(HeroAircraft.getInstance(), enemyAircraft, enemyBullets);
+//                prop.vanish();
+//            }
+//        }
 
     }
 
     /**
      * Post process
-     *   - Remove invalid enemies
-     *   - Remove invalid bullets
-     *   - Remove invalid & used props
+     * - Remove invalid enemies
+     * - Remove invalid bullets
+     * - Remove invalid & used props
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void postProcessAction() {
@@ -307,10 +394,6 @@ public class GameLogic {
                         AircraftHP.bossEnemyHP, Difficulty.bossScoreThreshold, Probability.eliteProbability, Kinematics.enemySpeedY);
             }
         }
-    }
-
-    public void moveHeroAircraft(int deltaX, int deltaY) {
-        HeroAircraft.getInstance().move(deltaX, deltaY);
     }
 
     public boolean getGameOver() {
