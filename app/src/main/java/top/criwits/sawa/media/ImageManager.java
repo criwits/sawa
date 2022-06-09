@@ -11,6 +11,7 @@ import java.util.Map;
 import top.criwits.sawa.R;
 import top.criwits.sawa.aircraft.BossEnemy;
 import top.criwits.sawa.aircraft.EliteEnemy;
+import top.criwits.sawa.aircraft.FriendAircraft;
 import top.criwits.sawa.aircraft.HeroAircraft;
 import top.criwits.sawa.aircraft.MobEnemy;
 import top.criwits.sawa.bullet.EnemyBullet;
@@ -34,6 +35,7 @@ public class ImageManager {
     public static Bitmap BULLET_HERO_IMG;
     public static Bitmap ELITE_IMG;
     public static Bitmap HERO_IMG;
+    public static Bitmap HERO2_IMG;
     public static Bitmap MOB_IMG;
     public static Bitmap PROP_BLOOD_IMG;
     public static Bitmap PROP_BOMB_IMG;
@@ -54,12 +56,14 @@ public class ImageManager {
         BULLET_HERO_IMG = BitmapFactory.decodeResource(r, R.drawable.bullet_hero);
         ELITE_IMG = BitmapFactory.decodeResource(r, R.drawable.elite);
         HERO_IMG = BitmapFactory.decodeResource(r, R.drawable.hero);
+        HERO2_IMG = BitmapFactory.decodeResource(r, R.drawable.hero_2);
         MOB_IMG = BitmapFactory.decodeResource(r, R.drawable.mob);
         PROP_BLOOD_IMG = BitmapFactory.decodeResource(r, R.drawable.prop_blood);
         PROP_BOMB_IMG = BitmapFactory.decodeResource(r, R.drawable.prop_bomb);
         PROP_BULLET_IMG = BitmapFactory.decodeResource(r, R.drawable.prop_bullet);
 
         CLASSNAME_IMAGE_MAP.put(HeroAircraft.class.getName(), HERO_IMG);
+        CLASSNAME_IMAGE_MAP.put(FriendAircraft.class.getName(), HERO2_IMG);
         CLASSNAME_IMAGE_MAP.put(MobEnemy.class.getName(), MOB_IMG);
         CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), BULLET_HERO_IMG);
         CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), BULLET_ENEMY_IMG);

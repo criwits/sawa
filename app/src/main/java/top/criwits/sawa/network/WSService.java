@@ -46,6 +46,7 @@ public class WSService extends Service {
                         sendBroadcast(intent);
                         break;
                     default:
+                        MessageQueue.offer(msg);
                         break;
                 }
             }

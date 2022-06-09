@@ -1,4 +1,4 @@
-package top.criwits.sawa.solo;
+package top.criwits.sawa.multi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,6 +20,7 @@ import top.criwits.sawa.R;
 import top.criwits.sawa.aircraft.AbstractAircraft;
 import top.criwits.sawa.aircraft.AircraftFactory;
 import top.criwits.sawa.aircraft.EliteEnemyFactory;
+import top.criwits.sawa.aircraft.FriendAircraft;
 import top.criwits.sawa.aircraft.HeroAircraft;
 import top.criwits.sawa.aircraft.MobEnemyFactory;
 import top.criwits.sawa.basic.AbstractFlyingObject;
@@ -32,6 +33,7 @@ import top.criwits.sawa.config.Kinematics;
 import top.criwits.sawa.config.Media;
 import top.criwits.sawa.config.Probability;
 import top.criwits.sawa.media.SoundHelper;
+import top.criwits.sawa.network.WSService;
 import top.criwits.sawa.prop.AbstractProp;
 import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.utils.RandomGenerator;
@@ -129,6 +131,9 @@ public class GameView extends SurfaceView implements
         for (int i = 0; i < game.getHeroBulletsList().size(); i++) {
             drawFlyingObject(game.getHeroBulletsList().get(i), canvas, paint);
         }
+        for (int i = 0; i < game.getFriendBullets().size(); i++) {
+            drawFlyingObject(game.getFriendBullets().get(i), canvas, paint);
+        }
         for (int i = 0; i < game.getPropsList().size(); i++) {
             drawFlyingObject(game.getPropsList().get(i), canvas, paint);
         }
@@ -137,6 +142,7 @@ public class GameView extends SurfaceView implements
         }
 
         // 画英雄机
+        drawFlyingObject(FriendAircraft.getInstance(), canvas, paint);
         drawFlyingObject(HeroAircraft.getInstance(), canvas, paint);
 
         // 分数
@@ -150,11 +156,10 @@ public class GameView extends SurfaceView implements
         canvas.drawText("HP: " + String.valueOf(HeroAircraft.getInstance().getHp()), Kinematics.getRealPixel(20), Kinematics.getRealPixel(110), textPaint);
         textPaint.setColor(Color.GRAY);
         canvas.drawText("MSPF: " + String.valueOf(mspf) + " ms", Kinematics.getRealPixel(20), Kinematics.getRealPixel(145), textPaint);
-
         sh.unlockCanvasAndPost(canvas);
     }
 
-    
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void run() {
@@ -185,8 +190,6 @@ public class GameView extends SurfaceView implements
         }
 
         // Game Over
-        SoloActivity activity = (SoloActivity) getContext();
-        activity.gameOver(game.getScore(), Difficulty.difficulty);
     }
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {

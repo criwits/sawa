@@ -10,10 +10,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
@@ -25,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import top.criwits.sawa.R;
+import top.criwits.sawa.config.Difficulty;
+import top.criwits.sawa.config.Graphics;
+import top.criwits.sawa.config.LoadConfig;
 import top.criwits.sawa.network.WSService;
 
 public class RoomSelectActivity extends AppCompatActivity {
@@ -74,6 +79,62 @@ public class RoomSelectActivity extends AppCompatActivity {
         RoomAdapter adapter = new RoomAdapter(RoomSelectActivity.this, R.layout.room_item, list);
         ListView listView = (ListView) findViewById(R.id.roomList);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                System.out.println(list.get(i).getRoomID());
+                // 加入房间
+                WSService.getClient().send("{\"type\": \"join_room\", \"room_id\":" + String.valueOf(list.get(i).getRoomID()) + " }");
+                BroadcastReceiver receiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        String rawMsg = intent.getStringExtra("top.criwits.sawa.MESSAGE_RAW");
+                        JSONObject msg = JSON.parseObject(rawMsg);
+                        if (msg.getString("type").equals("join_room_response") &&
+                                msg.getBooleanValue("success")) {
+                            Difficulty.difficulty = list.get(i).getDifficulty();
+                            sendResolutionInfo();
+                        }
+
+                        unregisterReceiver(this);
+                    }
+                };
+
+                IntentFilter filter = new IntentFilter();
+                filter.addAction("top.criwits.sawa.MESSAGE");
+                registerReceiver(receiver, filter);
+            }
+        });
+    }
+
+    private void sendResolutionInfo() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        WSService.getClient().send("{\"type\": \"resolution\", \"width\": " + String.valueOf(dm.widthPixels) + ", \"height\": " + String.valueOf(dm.heightPixels) + "}");
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String rawMsg = intent.getStringExtra("top.criwits.sawa.MESSAGE_RAW");
+                JSONObject msg = JSON.parseObject(rawMsg);
+                if (msg.getString("type").equals("game_start")) {
+                    Graphics.screenWidth = dm.widthPixels;
+                    Graphics.screenHeight = (int) (msg.getDouble("ratio") * dm.widthPixels);
+                    // TODO: Start Game!
+                    startGame();
+                }
+
+                unregisterReceiver(this);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("top.criwits.sawa.MESSAGE");
+        registerReceiver(receiver, filter);
+    }
+
+    private void startGame() {
+        Intent intent = new Intent(this, MultiActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -135,6 +196,7 @@ public class RoomSelectActivity extends AppCompatActivity {
                                 JSONObject msg = JSON.parseObject(rawMsg);
                                 if (msg.getString("type").equals("create_room_response")) {
                                     int roomID = msg.getInteger("room_id");
+                                    Difficulty.difficulty = difficulty;
                                     startWaiting(roomID);
                                 }
 

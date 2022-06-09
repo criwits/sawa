@@ -12,9 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SimpleAircraftWar">
         <activity
+            android:name=".multi.MultiActivity"
+            android:exported="false" />
+        <activity
             android:name=".multi.WaitingActivity"
             android:exported="false"
-            android:label="@string/waiting"/>
+            android:label="@string/waiting" />
         <activity
             android:name=".multi.RoomSelectActivity"
             android:exported="false"
