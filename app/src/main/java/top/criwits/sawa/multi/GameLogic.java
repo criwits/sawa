@@ -25,6 +25,7 @@ import top.criwits.sawa.config.AircraftHP;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.Kinematics;
+import top.criwits.sawa.config.Multiple;
 import top.criwits.sawa.config.Probability;
 import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.media.SoundHelper;
@@ -93,6 +94,9 @@ public class GameLogic {
     }
 
     public void doAtEveryCycle() {
+        if (Multiple.isHost) {
+            // TODO: 生成 NPC，放自己的列表，然后上传
+        }
         shootAction();
     }
 
