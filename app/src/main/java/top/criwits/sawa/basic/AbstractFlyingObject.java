@@ -13,6 +13,7 @@ import top.criwits.sawa.media.ImageManager;
  */
 public abstract class AbstractFlyingObject {
     // Both location X and Y are at the centre of image assets!
+    protected int id; // 所有的飞行器要加上一个字段「id」
     protected int locationX;
     protected int locationY;
     protected int speedX;
@@ -25,6 +26,13 @@ public abstract class AbstractFlyingObject {
     // Height, -1 for unset
     protected int height = -1;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     // 'Valid' or 'Survive' mark
     protected boolean isValid = true;
