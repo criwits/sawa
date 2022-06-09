@@ -12,10 +12,13 @@ import java.util.List;
 import top.criwits.sawa.aircraft.AbstractAircraft;
 import top.criwits.sawa.aircraft.AircraftFactory;
 import top.criwits.sawa.aircraft.BossEnemy;
+import top.criwits.sawa.aircraft.EliteEnemy;
 import top.criwits.sawa.aircraft.EliteEnemyFactory;
 import top.criwits.sawa.aircraft.FriendAircraft;
 import top.criwits.sawa.aircraft.HeroAircraft;
+import top.criwits.sawa.aircraft.MobEnemy;
 import top.criwits.sawa.aircraft.MobEnemyFactory;
+import top.criwits.sawa.basic.AbstractFactory;
 import top.criwits.sawa.basic.AbstractFlyingObject;
 import top.criwits.sawa.bullet.AbstractBullet;
 import top.criwits.sawa.config.AircraftHP;
@@ -110,6 +113,29 @@ public class GameLogic {
                 case "teammate_movement":
                     FriendAircraft.setLocation((int) (msg.getInteger("new_x") * Graphics.pixelScalingFactor),
                             (int) (msg.getInteger("new_y") * Graphics.pixelScalingFactor));
+                    break;
+                case "npc_spawn":
+                    AircraftFactory factory = null;
+                    switch (msg.getInteger("mob")) {
+                        case 0:
+                            factory = new MobEnemyFactory();
+                            break;
+                        case 1:
+                            factory = new EliteEnemyFactory();
+                            break;
+                        default:
+                            break;
+                    }
+                    assert factory != null;
+                    AbstractAircraft newAircraft = factory.createAircraft(
+                            (int)(msg.getInteger("location_x") * Graphics.pixelScalingFactor),
+                            (int)(msg.getInteger("location_y") * Graphics.pixelScalingFactor),
+                            (int)(msg.getInteger("speed_x") * Graphics.pixelScalingFactor),
+                            (int)(msg.getInteger("speed_y") * Graphics.pixelScalingFactor),
+                            msg.getInteger("hp")
+                    );
+                    newAircraft.setId(msg.getInteger("id"));
+                    enemyAircraft.add(newAircraft);
                     break;
                 default:
                     break;
