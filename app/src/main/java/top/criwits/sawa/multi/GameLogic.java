@@ -19,6 +19,8 @@ import top.criwits.sawa.aircraft.HeroAircraft;
 import top.criwits.sawa.aircraft.MobEnemyFactory;
 import top.criwits.sawa.basic.AbstractFlyingObject;
 import top.criwits.sawa.bullet.AbstractBullet;
+import top.criwits.sawa.bullet.BulletStrategyParallel;
+import top.criwits.sawa.bullet.BulletStrategyScatter;
 import top.criwits.sawa.config.AircraftHP;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
@@ -41,6 +43,8 @@ public class GameLogic {
     private int lastTimeBossSpawned = 0;
     private int difficultyIncreaseCount = 0;
     private int id = 0;
+    private static int playerStrategyLevel = 0;
+    private static int friendStrategyLevel = 0;
 
     private final List<AbstractAircraft> enemyAircraft;
     private final List<AbstractBullet> heroBullets;
@@ -106,6 +110,7 @@ public class GameLogic {
     // boolean msgFlag = false;
 
     public void doAtEveryTick() {
+
         // Upload hero movement
         uploadHeroMovement();
         // Fetch messages
@@ -268,6 +273,12 @@ public class GameLogic {
         while (!MessageQueue.isEmpty()) {
             JSONObject msg = MessageQueue.poll();
             switch (msg.getString("type")) {
+
+                /**
+                 *  壬寅年 六月 某智障 case 不加 break
+                 *  特此谨记
+                 */
+
                 case "teammate_movement":
                     teammateMovement(msg);
                     break;
@@ -280,10 +291,100 @@ public class GameLogic {
                 case "prop_spawn":
                     propSpawn(msg);
                     break;
+                case "blood_action":
+                    bloodAction();
+                    break;
+                case "bomb_action":
+                    bombAction(msg);
+                    break;
+                case "bullet_action":
+                    bulletAction(msg);
+                    break;
                 default:
                     break;
             }
         }
+    }
+
+    private void bulletAction(JSONObject msg) {
+        SoundHelper.playGetSupply();
+
+        // If target is true, player pick up bullet prop.
+        // If target is false, friend pick up bullet prop.
+        if (msg.getBooleanValue("target")) {
+            HeroAircraft heroAircraft = HeroAircraft.getInstance();
+            // add more bullets
+            heroAircraft.cannon.setCount(heroAircraft.cannon.getCount() + Difficulty.bulletPropEffectLevel);
+            heroAircraft.cannon.setStrategy(new BulletStrategyScatter());
+            // increase strategy level
+            playerStrategyLevel++;
+            Runnable r = () -> {
+                try {
+                    // sleep for a period of time
+                    Thread.sleep(Difficulty.bulletPropEffectTime);
+                    // recover
+                    heroAircraft.cannon.setCount(heroAircraft.cannon.getCount() - Difficulty.bulletPropEffectLevel);
+                    playerStrategyLevel--;
+                    if (playerStrategyLevel == 0) {
+                        // prevent when multiple bullet props are active,
+                        // the first one may erase others' effect.
+                        heroAircraft.cannon.setStrategy(new BulletStrategyParallel());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            };
+            new Thread(r, "PlayerBulletPropTimer").start();
+        } else {
+            FriendAircraft friendAircraft = FriendAircraft.getInstance();
+            // add more bullets
+            friendAircraft.cannon.setCount(friendAircraft.cannon.getCount() + Difficulty.bulletPropEffectLevel);
+            friendAircraft.cannon.setStrategy(new BulletStrategyScatter());
+            // increase strategy level
+            friendStrategyLevel++;
+
+            Runnable r = () -> {
+                try {
+                    // sleep for a period of time
+                    Thread.sleep(Difficulty.bulletPropEffectTime);
+                    // recover
+                    friendAircraft.cannon.setCount(friendAircraft.cannon.getCount() - Difficulty.bulletPropEffectLevel);
+                    friendStrategyLevel--;
+                    if (friendStrategyLevel == 0) {
+                        // prevent when multiple bullet props are active,
+                        // the first one may erase others' effect.
+                        friendAircraft.cannon.setStrategy(new BulletStrategyParallel());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            };
+            new Thread(r, "FriendBulletPropTimer").start();
+        }
+    }
+
+    private void bombAction(JSONObject msg) {
+        // 1. clear enemy aircraft
+        for (AbstractAircraft enemy : enemyAircraft) {
+            if (enemy instanceof BossEnemy) {
+                continue;
+            }
+            enemy.vanish();
+        }
+        // 2. clear enemy bullets
+        for (AbstractBullet enemyBullet : enemyBullets) {
+            enemyBullet.vanish();
+        }
+        // 3. add score
+        score += msg.getInteger("add_score");
+        // 4. play bomb explosion sound
+        SoundHelper.playBombExplosion();
+    }
+
+    private void bloodAction() {
+        SoundHelper.playGetSupply();
+        HeroAircraft.getInstance().increaseHp(50);
     }
 
     private void propSpawn(JSONObject msg) {
@@ -468,7 +569,6 @@ public class GameLogic {
                 continue;
             }
             if (HeroAircraft.getInstance().crash(prop)) {
-                SoundHelper.playGetSupply();
                 prop.vanish();
                 WSService.getClient().send("{ \"type\" : \"prop_action\", \"id\":" + prop.getId() + "}");
             }
@@ -479,10 +579,10 @@ public class GameLogic {
             if (prop.notValid()) {
                 continue;
             }
-           if (FriendAircraft.getInstance().crash(prop)){
-               SoundHelper.playGetSupply();
-               prop.vanish();
-           }
+            if (FriendAircraft.getInstance().crash(prop)) {
+                SoundHelper.playGetSupply();
+                prop.vanish();
+            }
         }
 
 
