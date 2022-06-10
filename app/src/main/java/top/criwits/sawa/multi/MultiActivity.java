@@ -2,15 +2,21 @@ package top.criwits.sawa.multi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.LoadConfig;
@@ -19,6 +25,7 @@ import top.criwits.sawa.config.Multiple;
 import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.media.MusicService;
 import top.criwits.sawa.multi.GameView;
+import top.criwits.sawa.network.WSService;
 
 public class MultiActivity extends AppCompatActivity {
 
@@ -59,6 +66,35 @@ public class MultiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Multiple.isMulti = true;
         enterFullScreenMode();
+
+        // 发送分辨率信息！
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        WSService.getClient().send("{\"type\": \"resolution\", \"width\": " + String.valueOf(dm.widthPixels) + ", \"height\": " + String.valueOf(dm.heightPixels) + "}");
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+            String rawMsg = intent.getStringExtra("top.criwits.sawa.MESSAGE_RAW");
+            JSONObject msg = JSON.parseObject(rawMsg);
+            if (msg.getString("type").equals("game_start")) {
+                Graphics.screenWidth = dm.widthPixels;
+                Graphics.screenHeight = (int) (msg.getDouble("ratio") * dm.widthPixels);
+                startGame();
+            }
+
+            unregisterReceiver(this);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("top.criwits.sawa.MESSAGE");
+        registerReceiver(receiver, filter);
+    }
+
+    /**
+     * 接到屏幕信息后启动游戏
+     */
+    private void startGame() {
         ImageManager.loadImages(getResources());
         getScaleRatio();
         ImageManager.reSizeAllBGs();

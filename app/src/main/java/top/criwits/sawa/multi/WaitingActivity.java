@@ -47,32 +47,7 @@ public class WaitingActivity extends AppCompatActivity {
                 String rawMsg = intent.getStringExtra("top.criwits.sawa.MESSAGE_RAW");
                 JSONObject msg = JSON.parseObject(rawMsg);
                 if (msg.getString("type").equals("room_ready")) {
-                    sendResolutionInfo();
-                }
-
-                unregisterReceiver(this);
-            }
-        };
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("top.criwits.sawa.MESSAGE");
-        registerReceiver(receiver, filter);
-    }
-
-    private void sendResolutionInfo() {
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        WSService.getClient().send("{\"type\": \"resolution\", \"width\": " + String.valueOf(dm.widthPixels) + ", \"height\": " + String.valueOf(dm.heightPixels) + "}");
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String rawMsg = intent.getStringExtra("top.criwits.sawa.MESSAGE_RAW");
-                JSONObject msg = JSON.parseObject(rawMsg);
-                if (msg.getString("type").equals("game_start")) {
-                    Graphics.screenWidth = dm.widthPixels;
-                    Graphics.screenHeight = (int) (msg.getDouble("ratio") * dm.widthPixels);
-                    // TODO: Start Game!
-                    startGame();
+                    startGameActivity();
                 }
 
                 unregisterReceiver(this);
@@ -85,10 +60,14 @@ public class WaitingActivity extends AppCompatActivity {
     }
 
 
-    private void startGame() {
+
+
+    private void startGameActivity() {
         Multiple.isHost = true;
         Intent intent = new Intent(this, MultiActivity.class);
         intent.putExtra("top.criwits.sawa.DIFFICULTY_INDEX", Difficulty.difficulty);
         startActivity(intent);
     }
+
+
 }

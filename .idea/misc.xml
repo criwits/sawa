@@ -18,6 +18,8 @@
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/menu_room_select.xml" value="0.5" />
         <entry key="app/src/main/res/menu/menu_welcome.xml" value="0.5" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.208" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.208" />
       </map>
     </option>
   </component>
