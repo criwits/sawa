@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import top.criwits.sawa.R;
+import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.Multiple;
 import top.criwits.sawa.network.WSService;
@@ -87,6 +88,7 @@ public class WaitingActivity extends AppCompatActivity {
     private void startGame() {
         Multiple.isHost = true;
         Intent intent = new Intent(this, MultiActivity.class);
+        intent.putExtra("top.criwits.sawa.DIFFICULTY_INDEX", Difficulty.difficulty);
         startActivity(intent);
     }
 }

@@ -8,7 +8,7 @@ public class Difficulty {
     public static int difficulty = 0;
 
     public static int enemyMaxNumber = 5;
-    public static int bossScoreThreshold = 500;
+    public static int bossScoreThreshold = 200;
     public static int bossPropCount = 3;
     public static int mobEnemyScore = 10;
     public static int eliteEnemyScore = 20;

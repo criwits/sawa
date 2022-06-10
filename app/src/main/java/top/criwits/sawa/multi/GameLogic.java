@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.LinkedList;
@@ -29,6 +30,10 @@ import top.criwits.sawa.media.SoundHelper;
 import top.criwits.sawa.network.MessageQueue;
 import top.criwits.sawa.network.WSService;
 import top.criwits.sawa.prop.AbstractProp;
+import top.criwits.sawa.prop.BloodPropFactory;
+import top.criwits.sawa.prop.BombPropFactory;
+import top.criwits.sawa.prop.BulletPropFactory;
+import top.criwits.sawa.prop.PropFactory;
 import top.criwits.sawa.utils.RandomGenerator;
 
 public class GameLogic {
@@ -101,19 +106,22 @@ public class GameLogic {
     // boolean msgFlag = false;
 
     public void doAtEveryTick() {
-
+        // Upload hero movement
         uploadHeroMovement();
-
+        // Fetch messages
         fetchMessages();
-
+        // Boss Generation
+        bossGenerateAction();
         // Increase difficulty
         difficultyIncrease();
         // Bullet move
         bulletsMoveAction();
         // Aircraft move
         aircraftsMoveAction();
-
+        // Upload enemy out of screen
         uploadEnemyOutScreen();
+        // Upload prop out of screen
+        uploadPropOutScreen();
         // props move
         propsMoveAction();
         // Crash check
@@ -126,59 +134,110 @@ public class GameLogic {
 //        }
     }
 
+    private void uploadPropOutScreen() {
+        if (Multiple.isHost) {
+            for (AbstractProp prop : props) {
+                if (prop.getLocationY() >= Graphics.screenHeight) {
+                    WSService.getClient().send("{\"type\": \"remove_prop\",\"remove\":" + prop.getId() + "}");
+                }
+            }
+        }
+    }
+
+    private void bossGenerateAction() {
+        if (Multiple.isHost) {
+            if (Difficulty.difficulty != 0) {
+
+                AbstractAircraft newAircraft = null;
+                int realSpeedX = RandomGenerator.nonZeroGenerator(Kinematics.bossSpeedX);
+
+                if (score - lastTimeBossSpawned > Difficulty.bossScoreThreshold) {
+                    lastTimeBossSpawned = score;
+                    if (!BossEnemy.isBossActive()) {
+                        newAircraft = BossEnemy.summonBoss((int) (Math.random() * (Graphics.screenWidth - 200)),
+                                Kinematics.getRealPixel(Kinematics.bossLocationY),
+                                Kinematics.getRealPixel(realSpeedX),
+                                0,
+                                AircraftHP.bossEnemyHP);
+                        newAircraft.setId(id);
+                        enemyAircraft.add(newAircraft);
+                        // mob = 2 means boss
+                        WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 2 + ", \"id\" : " + id + " , \"location_x\": " +
+                                (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
+                                (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
+                                realSpeedX + ", \"speed_y\":" +
+                                0 + ", \"hp\":" + AircraftHP.bossEnemyHP + "}"
+                        );
+
+                        // Increase boss HP
+                        AircraftHP.bossEnemyHP += Difficulty.bossHpIncrease;
+                        if (Difficulty.difficulty == 2) {
+                            System.out.printf("Boss generated. Next HP: %d\n", AircraftHP.bossEnemyHP);
+                        }
+                        id++;
+                    }
+
+                }
+
+            }
+        }
+    }
+
     private void spawnNPCandUpload() {
         if (Multiple.isHost) {
             // Host generates enemy aircraft and uploads.
-            AircraftFactory newAircraftFactory;
-            AbstractAircraft newAircraft = null;
-            int speedX;
-            int hp;
-            // Decide which type of enemy should be spawned
-            if (Math.random() < Probability.eliteProbability) {
-                newAircraftFactory = new EliteEnemyFactory();
-                int realSpeedX = RandomGenerator.nonZeroGenerator(Kinematics.enemySpeedX);
-                speedX = Kinematics.getRealPixel(realSpeedX);
-                hp = AircraftHP.eliteEnemyHP;
-                newAircraft = newAircraftFactory.createAircraft(
-                        (int) (Math.random() * (Graphics.screenWidth - ImageManager.ELITE_IMG.getWidth())),
-                        (int) (Math.random() * Graphics.screenHeight * 0.2),
-                        speedX,
-                        Kinematics.getRealPixel(Kinematics.enemySpeedY),
-                        hp
-                );
-                newAircraft.setId(id);
-                enemyAircraft.add(newAircraft);
-                // mob = 1 means elite
-                WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 1 + ", \"id\" : " + id + " , \"location_x\": " +
-                        (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
-                        (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
-                        realSpeedX + ", \"speed_y\":" +
-                        Kinematics.enemySpeedY + ", \"hp\":" + hp + "}"
-                );
-                id++;
+            if (enemyAircraft.size() < Difficulty.enemyMaxNumber) {
+                AircraftFactory newAircraftFactory;
+                AbstractAircraft newAircraft = null;
+                int speedX;
+                int hp;
+                // Decide which type of enemy should be spawned
+                if (Math.random() < Probability.eliteProbability) {
+                    newAircraftFactory = new EliteEnemyFactory();
+                    int realSpeedX = RandomGenerator.nonZeroGenerator(Kinematics.enemySpeedX);
+                    speedX = Kinematics.getRealPixel(realSpeedX);
+                    hp = AircraftHP.eliteEnemyHP;
+                    newAircraft = newAircraftFactory.createAircraft(
+                            (int) (Math.random() * (Graphics.screenWidth - ImageManager.ELITE_IMG.getWidth())),
+                            (int) (Math.random() * Graphics.screenHeight * 0.2),
+                            speedX,
+                            Kinematics.getRealPixel(Kinematics.enemySpeedY),
+                            hp
+                    );
+                    newAircraft.setId(id);
+                    enemyAircraft.add(newAircraft);
+                    // mob = 1 means elite
+                    WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 1 + ", \"id\" : " + id + " , \"location_x\": " +
+                            (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
+                            (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
+                            realSpeedX + ", \"speed_y\":" +
+                            Kinematics.enemySpeedY + ", \"hp\":" + hp + "}"
+                    );
+                    id++;
 
-            } else {
-                newAircraftFactory = new MobEnemyFactory();
-                speedX = 0;
-                hp = AircraftHP.mobEnemyHP;
+                } else {
+                    newAircraftFactory = new MobEnemyFactory();
+                    speedX = 0;
+                    hp = AircraftHP.mobEnemyHP;
 
-                newAircraft = newAircraftFactory.createAircraft(
-                        (int) (Math.random() * (Graphics.screenWidth - ImageManager.MOB_IMG.getWidth())),
-                        (int) (Math.random() * Graphics.screenHeight * 0.2),
-                        speedX,
-                        Kinematics.getRealPixel(Kinematics.enemySpeedY),
-                        hp
-                );
-                newAircraft.setId(id);
-                enemyAircraft.add(newAircraft);
-                // mob = 0 means mob
-                WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 0 + ", \"id\" : " + id + " , \"location_x\": " +
-                        (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
-                        (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
-                        (int) (newAircraft.getSpeedX() / Graphics.pixelScalingFactor) + ", \"speed_y\":" +
-                        Kinematics.enemySpeedY + ", \"hp\":" + hp + "}"
-                );
-                id++;
+                    newAircraft = newAircraftFactory.createAircraft(
+                            (int) (Math.random() * (Graphics.screenWidth - ImageManager.MOB_IMG.getWidth())),
+                            (int) (Math.random() * Graphics.screenHeight * 0.2),
+                            speedX,
+                            Kinematics.getRealPixel(Kinematics.enemySpeedY),
+                            hp
+                    );
+                    newAircraft.setId(id);
+                    enemyAircraft.add(newAircraft);
+                    // mob = 0 means mob
+                    WSService.getClient().send("{\"type\": \"npc_upload\", \"mob\":" + 0 + ", \"id\" : " + id + " , \"location_x\": " +
+                            (int) (newAircraft.getLocationX() / Graphics.pixelScalingFactor) + ", \"location_y\": " +
+                            (int) (newAircraft.getLocationY() / Graphics.pixelScalingFactor) + ", \"speed_x\": " +
+                            (int) (newAircraft.getSpeedX() / Graphics.pixelScalingFactor) + ", \"speed_y\":" +
+                            Kinematics.enemySpeedY + ", \"hp\":" + hp + "}"
+                    );
+                    id++;
+                }
             }
         }
     }
@@ -192,6 +251,7 @@ public class GameLogic {
             }
         }
     }
+
 
     private void uploadHeroMovement() {
         // Send movement
@@ -209,44 +269,109 @@ public class GameLogic {
             JSONObject msg = MessageQueue.poll();
             switch (msg.getString("type")) {
                 case "teammate_movement":
-                    FriendAircraft.setLocation((int) (msg.getInteger("new_x") * Graphics.pixelScalingFactor),
-                            (int) (msg.getInteger("new_y") * Graphics.pixelScalingFactor));
+                    teammateMovement(msg);
                     break;
                 case "npc_spawn":
-                    AircraftFactory factory = null;
-                    switch (msg.getInteger("mob")) {
-                        case 0:
-                            factory = new MobEnemyFactory();
-                            break;
-                        case 1:
-                            factory = new EliteEnemyFactory();
-                            break;
-                        default:
-                            break;
-                    }
-                    assert factory != null;
-                    AbstractAircraft newAircraft = factory.createAircraft(
-                            (int) (msg.getInteger("location_x") * Graphics.pixelScalingFactor),
-                            (int) (msg.getInteger("location_y") * Graphics.pixelScalingFactor),
-                            (int) (msg.getInteger("speed_x") * Graphics.pixelScalingFactor),
-                            (int) (msg.getInteger("speed_y") * Graphics.pixelScalingFactor),
-                            msg.getInteger("hp")
-                    );
-                    newAircraft.setId(msg.getInteger("id"));
-                    enemyAircraft.add(newAircraft);
+                    NPCSpawn(msg);
                     break;
                 case "score":
-                    for (AbstractAircraft enemyAircraft : enemyAircraft) {
-                        if (enemyAircraft.getId() == msg.getInteger("remove")) {
-                            enemyAircraft.vanish();
-                        }
-                    }
-                    score += msg.getInteger("score");
+                    addScore(msg);
+                    break;
+                case "prop_spawn":
+                    propSpawn(msg);
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    private void propSpawn(JSONObject msg) {
+        AbstractProp prop;
+        PropFactory newPropFactory = null;
+
+        JSONArray propArray = msg.getJSONArray("props");
+        for (int i = 0; i < propArray.size(); i++) {
+            JSONObject object = propArray.getJSONObject(i);
+            int propKind = object.getInteger("kind");
+
+            switch (propKind) {
+                case 0:
+                    newPropFactory = new BloodPropFactory();
+                    break;
+                case 1:
+                    newPropFactory = new BombPropFactory();
+                    break;
+                case 2:
+                    newPropFactory = new BulletPropFactory();
+                    break;
+                default:
+                    break;
+            }
+            prop = newPropFactory.createProp(
+                    (int) (object.getInteger("location_x") * Graphics.pixelScalingFactor),
+                    (int) (object.getInteger("location_y") * Graphics.pixelScalingFactor),
+                    0,
+                    (int) (Kinematics.enemySpeedY * Graphics.pixelScalingFactor)
+            );
+            prop.setId(object.getInteger("id"));
+            props.add(prop);
+        }
+    }
+
+    private void addScore(JSONObject msg) {
+        for (AbstractAircraft enemyAircraft : enemyAircraft) {
+            if (enemyAircraft.getId() == msg.getInteger("remove")) {
+                enemyAircraft.vanish();
+            }
+        }
+        score += msg.getInteger("score");
+    }
+
+    private void NPCSpawn(JSONObject msg) {
+        int mob = msg.getInteger("mob");
+
+        if (mob == 2) {
+            // BOSS
+            AbstractAircraft newAircraft;
+            newAircraft = BossEnemy.summonBoss(
+                    (int) (msg.getInteger("location_x") * Graphics.pixelScalingFactor),
+                    (int) (msg.getInteger("location_y") * Graphics.pixelScalingFactor),
+                    (int) (msg.getInteger("speed_x") * Graphics.pixelScalingFactor),
+                    (int) (msg.getInteger("speed_y") * Graphics.pixelScalingFactor),
+                    msg.getInteger("hp")
+            );
+            newAircraft.setId(msg.getInteger("id"));
+            enemyAircraft.add(newAircraft);
+        } else {
+            // Use factory
+            AircraftFactory factory = null;
+            switch (mob) {
+                case 0:
+                    factory = new MobEnemyFactory();
+                    break;
+                case 1:
+                    factory = new EliteEnemyFactory();
+                    break;
+                default:
+                    break;
+            }
+            assert factory != null;
+            AbstractAircraft newAircraft = factory.createAircraft(
+                    (int) (msg.getInteger("location_x") * Graphics.pixelScalingFactor),
+                    (int) (msg.getInteger("location_y") * Graphics.pixelScalingFactor),
+                    (int) (msg.getInteger("speed_x") * Graphics.pixelScalingFactor),
+                    (int) (msg.getInteger("speed_y") * Graphics.pixelScalingFactor),
+                    msg.getInteger("hp")
+            );
+            newAircraft.setId(msg.getInteger("id"));
+            enemyAircraft.add(newAircraft);
+        }
+    }
+
+    private void teammateMovement(JSONObject msg) {
+        FriendAircraft.setLocation((int) (msg.getInteger("new_x") * Graphics.pixelScalingFactor),
+                (int) (msg.getInteger("new_y") * Graphics.pixelScalingFactor));
     }
 
     private void shootAction() {
@@ -311,10 +436,12 @@ public class GameLogic {
                 }
                 if (enemyAircraft.crash(bullet)) {
                     SoundHelper.playBulletHit();
-                    //enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     WSService.getClient().send("{ \"type\" : \"damage\", \"id\":" + enemyAircraft.getId() +
-                            ", \"hp_decrease\":" + Difficulty.heroBulletPower + "}");
+                            ", \"hp_decrease\":" + Difficulty.heroBulletPower +
+                            ", \"location_x\":" + (int) (enemyAircraft.getLocationX() / Graphics.pixelScalingFactor) +
+                            ", \"location_y\":" + (int) (enemyAircraft.getLocationY() / Graphics.pixelScalingFactor) +
+                            "}");
                 }
             }
         }
@@ -334,6 +461,30 @@ public class GameLogic {
                 }
             }
         }
+
+        // Player pick up prop
+        for (AbstractProp prop : props) {
+            if (prop.notValid()) {
+                continue;
+            }
+            if (HeroAircraft.getInstance().crash(prop)) {
+                SoundHelper.playGetSupply();
+                prop.vanish();
+                WSService.getClient().send("{ \"type\" : \"prop_action\", \"id\":" + prop.getId() + "}");
+            }
+        }
+
+        // Friend pick up prop
+        for (AbstractProp prop : props) {
+            if (prop.notValid()) {
+                continue;
+            }
+           if (FriendAircraft.getInstance().crash(prop)){
+               SoundHelper.playGetSupply();
+               prop.vanish();
+           }
+        }
+
 
         // Props spawn
 //        for (AbstractAircraft enemyAircraft : enemyAircraft) {

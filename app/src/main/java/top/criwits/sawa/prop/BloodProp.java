@@ -15,7 +15,7 @@ public class BloodProp extends AbstractProp {
     @Override
     public int action(HeroAircraft heroAircraft, List<AbstractAircraft> enemyAircraft, List<AbstractBullet> abstractBullets) {
         SoundHelper.playGetSupply();
-        heroAircraft.increaseHp(20);
+        heroAircraft.increaseHp(50);
         return 0;
     }
 }
