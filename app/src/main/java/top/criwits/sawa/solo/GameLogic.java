@@ -273,5 +273,7 @@ public class GameLogic {
         return gameOver;
     }
 
-
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
 }

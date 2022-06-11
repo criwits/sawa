@@ -132,7 +132,7 @@ public class SoloActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
-            gameOver(view.game.getScore(), Difficulty.difficulty);
+            view.game.setGameOver(false);
         }
         return true;
     }
@@ -144,7 +144,6 @@ public class SoloActivity extends AppCompatActivity {
     }
 
     public void gameOver(int score, int difficulty) {
-        view.canDraw = false;
         this.finish();
         System.out.println("GAME OVER");
         Intent intent = new Intent(this, NameEnrollActivity.class);
