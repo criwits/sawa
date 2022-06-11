@@ -1,4 +1,4 @@
-package top.criwits.sawa.prop;
+package top.criwits.sawa.model.prop;
 
 public class BloodPropFactory implements PropFactory{
     @Override

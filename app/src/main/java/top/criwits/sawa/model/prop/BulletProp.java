@@ -1,10 +1,10 @@
-package top.criwits.sawa.prop;
+package top.criwits.sawa.model.prop;
 
-import top.criwits.sawa.aircraft.AbstractAircraft;
-import top.criwits.sawa.aircraft.HeroAircraft;
-import top.criwits.sawa.bullet.AbstractBullet;
-import top.criwits.sawa.bullet.BulletStrategyParallel;
-import top.criwits.sawa.bullet.BulletStrategyScatter;
+import top.criwits.sawa.model.aircraft.AbstractAircraft;
+import top.criwits.sawa.model.aircraft.HeroAircraft;
+import top.criwits.sawa.model.bullet.AbstractBullet;
+import top.criwits.sawa.model.bullet.BulletStrategyParallel;
+import top.criwits.sawa.model.bullet.BulletStrategyScatter;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.media.SoundHelper;
 // import top.criwits.sawa.sound.PlaySound;

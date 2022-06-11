@@ -18,4 +18,6 @@
     <string name="difficulty">Difficulty: </string>
     <string name="your_room_id">Your Room ID is</string>
     <string name="waiting">Waiting for teammate…</string>
+    <string name="hero_score">Your Score</string>
+    <string name="friend_score">Your Teammate\'s Score</string>
 </resources>

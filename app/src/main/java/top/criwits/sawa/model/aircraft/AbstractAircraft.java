@@ -1,8 +1,8 @@
-package top.criwits.sawa.aircraft;
+package top.criwits.sawa.model.aircraft;
 
-import top.criwits.sawa.bullet.AbstractBullet;
-import top.criwits.sawa.basic.AbstractFlyingObject;
-import top.criwits.sawa.prop.AbstractProp;
+import top.criwits.sawa.model.bullet.AbstractBullet;
+import top.criwits.sawa.model.basic.AbstractFlyingObject;
+import top.criwits.sawa.model.prop.AbstractProp;
 
 import java.util.List;
 

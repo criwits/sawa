@@ -10,17 +10,17 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-import top.criwits.sawa.aircraft.AbstractAircraft;
-import top.criwits.sawa.aircraft.AircraftFactory;
-import top.criwits.sawa.aircraft.BossEnemy;
-import top.criwits.sawa.aircraft.EliteEnemyFactory;
-import top.criwits.sawa.aircraft.FriendAircraft;
-import top.criwits.sawa.aircraft.HeroAircraft;
-import top.criwits.sawa.aircraft.MobEnemyFactory;
-import top.criwits.sawa.basic.AbstractFlyingObject;
-import top.criwits.sawa.bullet.AbstractBullet;
-import top.criwits.sawa.bullet.BulletStrategyParallel;
-import top.criwits.sawa.bullet.BulletStrategyScatter;
+import top.criwits.sawa.model.aircraft.AbstractAircraft;
+import top.criwits.sawa.model.aircraft.AircraftFactory;
+import top.criwits.sawa.model.aircraft.BossEnemy;
+import top.criwits.sawa.model.aircraft.EliteEnemyFactory;
+import top.criwits.sawa.model.aircraft.FriendAircraft;
+import top.criwits.sawa.model.aircraft.HeroAircraft;
+import top.criwits.sawa.model.aircraft.MobEnemyFactory;
+import top.criwits.sawa.model.basic.AbstractFlyingObject;
+import top.criwits.sawa.model.bullet.AbstractBullet;
+import top.criwits.sawa.model.bullet.BulletStrategyParallel;
+import top.criwits.sawa.model.bullet.BulletStrategyScatter;
 import top.criwits.sawa.config.AircraftHP;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
@@ -31,11 +31,11 @@ import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.media.SoundHelper;
 import top.criwits.sawa.network.MessageQueue;
 import top.criwits.sawa.network.WSService;
-import top.criwits.sawa.prop.AbstractProp;
-import top.criwits.sawa.prop.BloodPropFactory;
-import top.criwits.sawa.prop.BombPropFactory;
-import top.criwits.sawa.prop.BulletPropFactory;
-import top.criwits.sawa.prop.PropFactory;
+import top.criwits.sawa.model.prop.AbstractProp;
+import top.criwits.sawa.model.prop.BloodPropFactory;
+import top.criwits.sawa.model.prop.BombPropFactory;
+import top.criwits.sawa.model.prop.BulletPropFactory;
+import top.criwits.sawa.model.prop.PropFactory;
 import top.criwits.sawa.utils.RandomGenerator;
 
 public class GameLogic {
@@ -101,13 +101,11 @@ public class GameLogic {
     }
 
     public void doAtEveryCycle() {
-
+        // Spawn (generate) NPCs, and upload their information
         spawnNPCandUpload();
-
+        // Let all NPCs shoot
         shootAction();
     }
-
-    // boolean msgFlag = false;
 
     public void doAtEveryTick() {
 
@@ -133,10 +131,8 @@ public class GameLogic {
         crashCheckAction();
         // Post process
         postProcessAction();
-
-//        if (HeroAircraft.getInstance().getHp() <= 0) {
-//            gameOver = true;
-//        }
+        // Game over check
+        gameOverCheck();
     }
 
     private void uploadPropOutScreen() {
@@ -261,12 +257,8 @@ public class GameLogic {
     private void uploadHeroMovement() {
         // Send movement
         // 下面这行代码是在每一帧的开始时向服务器发送位置信息的
-        //  msgFlag = !msgFlag;
-        //  if (msgFlag) {
         WSService.getClient().send("{\"type\": \"movement\", \"new_x\": " + (int) (HeroAircraft.getInstance().getLocationX() / Graphics.pixelScalingFactor) +
                 ", \"new_y\": " + (int) (HeroAircraft.getInstance().getLocationY() / Graphics.pixelScalingFactor) + "}");
-        // }
-        // Fetch Messages
     }
 
     private void fetchMessages() {
@@ -274,7 +266,7 @@ public class GameLogic {
             JSONObject msg = MessageQueue.poll();
             switch (msg.getString("type")) {
 
-                /**
+                /*
                  *  壬寅年 六月 某智障 case 不加 break
                  *  特此谨记
                  */
@@ -299,6 +291,9 @@ public class GameLogic {
                     break;
                 case "bullet_action":
                     bulletAction(msg);
+                    break;
+                case "game_end":
+                    gameEnd(msg);
                     break;
                 default:
                     break;
@@ -585,16 +580,6 @@ public class GameLogic {
             }
         }
 
-
-        // Props spawn
-//        for (AbstractAircraft enemyAircraft : enemyAircraft) {
-//            if (enemyAircraft.notValid()) {
-//                // Add score!
-//                score += enemyAircraft.addScore();
-//                props.addAll(enemyAircraft.generateProp());
-//            }
-//        }
-
         // Enemy and Hero crash
         for (AbstractAircraft enemyAircraft : enemyAircraft) {
             if (enemyAircraft.crash(HeroAircraft.getInstance()) || HeroAircraft.getInstance().crash(enemyAircraft)) {
@@ -602,14 +587,6 @@ public class GameLogic {
                 HeroAircraft.getInstance().decreaseHp(Integer.MAX_VALUE);
             }
         }
-
-//        for (AbstractProp prop : props) {
-//            if (HeroAircraft.getInstance().crash(prop)) {
-//                score += prop.action(HeroAircraft.getInstance(), enemyAircraft, enemyBullets);
-//                prop.vanish();
-//            }
-//        }
-
     }
 
     /**
@@ -645,6 +622,25 @@ public class GameLogic {
                         AircraftHP.bossEnemyHP, Difficulty.bossScoreThreshold, Probability.eliteProbability, Kinematics.enemySpeedY);
             }
         }
+    }
+
+    private void gameOverCheck() {
+        if (HeroAircraft.getInstance().getHp() <= 0) {
+            // 通知服务器，请求结束游戏
+            WSService.getClient().send("{\"type\": \"game_end_request\", \"reason\": 0 }");
+        }
+    }
+
+    private int friendScore = 0;
+
+    private void gameEnd(JSONObject msg) {
+        score = msg.getInteger("this_score");
+        friendScore = msg.getInteger("teammate_score");
+        gameOver = true;
+    }
+
+    public int getFriendScore() {
+        return friendScore;
     }
 
     public boolean getGameOver() {

@@ -59,10 +59,8 @@ public class WaitingActivity extends AppCompatActivity {
         registerReceiver(receiver, filter);
     }
 
-
-
-
     private void startGameActivity() {
+        this.finish();
         Multiple.isHost = true;
         Intent intent = new Intent(this, MultiActivity.class);
         intent.putExtra("top.criwits.sawa.DIFFICULTY_INDEX", Difficulty.difficulty);

@@ -1,11 +1,11 @@
-package top.criwits.sawa.bullet;
+package top.criwits.sawa.model.bullet;
+
+import top.criwits.sawa.config.Kinematics;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import top.criwits.sawa.config.Kinematics;
-
-public class BulletStrategyScatter implements BulletStrategy{
+public class BulletStrategyParallel implements BulletStrategy {
     @Override
     public List<AbstractBullet> generateBullets(int type, int count, int direction, int locationX, int locationY, int speedX, int speedY, int power) {
         List<AbstractBullet> res = new LinkedList<>();
@@ -17,10 +17,11 @@ public class BulletStrategyScatter implements BulletStrategy{
         for(int i = 0; i < count; i++) {
             // To make bullets separate horizontally.
             if (type == 0) {
-                abstractBullet = new HeroBullet(x, y, sX + Kinematics.getRealPixel(i * 2 - count + 1), sY, power);
+                abstractBullet = new HeroBullet(x + Kinematics.getRealPixel((i * 2 - count + 1) * 10), y, sX, sY, power);
             } else {
-                abstractBullet = new EnemyBullet(x, y, sX + Kinematics.getRealPixel(i * 2 - count + 1), sY, power);
+                abstractBullet = new EnemyBullet(x + Kinematics.getRealPixel((i * 2 - count + 1) * 10), y, sX, sY, power);
             }
+
             res.add(abstractBullet);
         }
         return res;

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class MessageQueue {
-    private static Queue<JSONObject> msgQueue = new LinkedList<JSONObject>();
+    private static final Queue<JSONObject> msgQueue = new LinkedList<>();
 
     public synchronized static void offer(JSONObject msg) {
         msgQueue.offer(msg);

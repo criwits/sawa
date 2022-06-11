@@ -297,6 +297,33 @@ SAWA 是 [SAWS](https://git.hit.edu.cn/criwits/saws) 的前端，与 SAWS 以一
 }
 ```
 
+### 本方死亡、按下返回键，通知服务器结束本局游戏
+
+任一一方发送此消息，服务器将结束本局游戏。
+
+`reason` 字段：0 = 因发信方死亡结束；1 = 因发信方按返回键结束。
+
+```json
+{
+  "type": "game_end_request",
+  "reason": 1
+}
+```
+
+### 服务器通知双方结束游戏
+
+`this_score` 为本方分数，`teammate_score` 为对方分数。`reason` 是结束游戏的原因。
+
+```json
+{
+  "type": "game_end",
+  "reason": 1,
+  "this_score": 1700,
+  "teammate_score": 1870
+}
+```
+
+
 ## 第三方库
 
 使用了下面这些库，在 Gradle 文件中已配置好。
@@ -304,6 +331,8 @@ SAWA 是 [SAWS](https://git.hit.edu.cn/criwits/saws) 的前端，与 SAWS 以一
 - `androidx.room`
 - `org.java-websocket`
 - `com.alibaba:fastjson`
+
+
 
 ## 开源许可
 

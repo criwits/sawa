@@ -152,7 +152,8 @@ public class MultiActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
-            this.finish();
+            // 通知服务器，请求结束游戏
+            WSService.getClient().send("{\"type\": \"game_end_request\", \"reason\": 1 }");
         }
         return true;
     }
@@ -161,5 +162,13 @@ public class MultiActivity extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         unbindService(conn);
+    }
+
+    public void gameOver(int reason, int thisScore, int teammateScore) {
+        this.finish();
+        Intent intent = new Intent(this, GameStatsticsActivity.class);
+        intent.putExtra("top.criwits.sawa.HERO_SCORE", thisScore);
+        intent.putExtra("top.criwits.sawa.FRIEND_SCORE", teammateScore);
+        startActivity(intent);
     }
 }

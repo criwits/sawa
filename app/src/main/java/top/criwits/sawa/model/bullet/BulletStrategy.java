@@ -1,6 +1,4 @@
-package top.criwits.sawa.bullet;
-
-import top.criwits.sawa.aircraft.AbstractAircraft;
+package top.criwits.sawa.model.bullet;
 
 import java.util.List;
 

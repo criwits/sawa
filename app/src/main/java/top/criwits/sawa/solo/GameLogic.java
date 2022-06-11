@@ -7,14 +7,14 @@ import androidx.annotation.RequiresApi;
 import java.util.LinkedList;
 import java.util.List;
 
-import top.criwits.sawa.aircraft.AbstractAircraft;
-import top.criwits.sawa.aircraft.AircraftFactory;
-import top.criwits.sawa.aircraft.BossEnemy;
-import top.criwits.sawa.aircraft.EliteEnemyFactory;
-import top.criwits.sawa.aircraft.HeroAircraft;
-import top.criwits.sawa.aircraft.MobEnemyFactory;
-import top.criwits.sawa.basic.AbstractFlyingObject;
-import top.criwits.sawa.bullet.AbstractBullet;
+import top.criwits.sawa.model.aircraft.AbstractAircraft;
+import top.criwits.sawa.model.aircraft.AircraftFactory;
+import top.criwits.sawa.model.aircraft.BossEnemy;
+import top.criwits.sawa.model.aircraft.EliteEnemyFactory;
+import top.criwits.sawa.model.aircraft.HeroAircraft;
+import top.criwits.sawa.model.aircraft.MobEnemyFactory;
+import top.criwits.sawa.model.basic.AbstractFlyingObject;
+import top.criwits.sawa.model.bullet.AbstractBullet;
 import top.criwits.sawa.config.AircraftHP;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
@@ -22,7 +22,7 @@ import top.criwits.sawa.config.Kinematics;
 import top.criwits.sawa.config.Probability;
 import top.criwits.sawa.media.ImageManager;
 import top.criwits.sawa.media.SoundHelper;
-import top.criwits.sawa.prop.AbstractProp;
+import top.criwits.sawa.model.prop.AbstractProp;
 import top.criwits.sawa.utils.RandomGenerator;
 
 public class GameLogic {

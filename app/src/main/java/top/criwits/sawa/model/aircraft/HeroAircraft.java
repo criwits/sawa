@@ -1,9 +1,9 @@
-package top.criwits.sawa.aircraft;
+package top.criwits.sawa.model.aircraft;
 
-import top.criwits.sawa.bullet.*;
+import top.criwits.sawa.model.bullet.*;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
-import top.criwits.sawa.prop.AbstractProp;
+import top.criwits.sawa.model.prop.AbstractProp;
 
 import java.util.LinkedList;
 import java.util.List;

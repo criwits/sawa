@@ -1,4 +1,4 @@
-package top.criwits.sawa.basic;
+package top.criwits.sawa.model.basic;
 
 public interface AbstractFactory {
     // Nothing!

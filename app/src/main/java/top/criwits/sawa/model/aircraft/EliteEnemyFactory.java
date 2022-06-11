@@ -1,4 +1,4 @@
-package top.criwits.sawa.aircraft;
+package top.criwits.sawa.model.aircraft;
 
 public class EliteEnemyFactory implements AircraftFactory{
     @Override

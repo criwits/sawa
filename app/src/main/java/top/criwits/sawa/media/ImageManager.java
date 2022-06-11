@@ -9,17 +9,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import top.criwits.sawa.R;
-import top.criwits.sawa.aircraft.BossEnemy;
-import top.criwits.sawa.aircraft.EliteEnemy;
-import top.criwits.sawa.aircraft.FriendAircraft;
-import top.criwits.sawa.aircraft.HeroAircraft;
-import top.criwits.sawa.aircraft.MobEnemy;
-import top.criwits.sawa.bullet.EnemyBullet;
-import top.criwits.sawa.bullet.HeroBullet;
+import top.criwits.sawa.model.aircraft.BossEnemy;
+import top.criwits.sawa.model.aircraft.EliteEnemy;
+import top.criwits.sawa.model.aircraft.FriendAircraft;
+import top.criwits.sawa.model.aircraft.HeroAircraft;
+import top.criwits.sawa.model.aircraft.MobEnemy;
+import top.criwits.sawa.model.bullet.EnemyBullet;
+import top.criwits.sawa.model.bullet.HeroBullet;
 import top.criwits.sawa.config.Graphics;
-import top.criwits.sawa.prop.BloodProp;
-import top.criwits.sawa.prop.BombProp;
-import top.criwits.sawa.prop.BulletProp;
+import top.criwits.sawa.model.prop.BloodProp;
+import top.criwits.sawa.model.prop.BombProp;
+import top.criwits.sawa.model.prop.BulletProp;
 
 public class ImageManager {
 

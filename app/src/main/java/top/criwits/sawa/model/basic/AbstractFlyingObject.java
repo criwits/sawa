@@ -1,8 +1,8 @@
-package top.criwits.sawa.basic;
+package top.criwits.sawa.model.basic;
 
 import android.graphics.Bitmap;
 
-import top.criwits.sawa.aircraft.AbstractAircraft;
+import top.criwits.sawa.model.aircraft.AbstractAircraft;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.media.ImageManager;
 

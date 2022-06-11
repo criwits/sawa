@@ -1,8 +1,7 @@
-package top.criwits.sawa.bullet;
+package top.criwits.sawa.model.bullet;
 
 import top.criwits.sawa.config.Graphics;
-import top.criwits.sawa.config.Kinematics;
-import top.criwits.sawa.basic.AbstractFlyingObject;
+import top.criwits.sawa.model.basic.AbstractFlyingObject;
 
 /**
  * An abstract class for all kinds of bullets

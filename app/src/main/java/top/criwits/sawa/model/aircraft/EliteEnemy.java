@@ -1,12 +1,11 @@
-package top.criwits.sawa.aircraft;
+package top.criwits.sawa.model.aircraft;
 
-import top.criwits.sawa.bullet.AbstractBullet;
-import top.criwits.sawa.bullet.BulletStrategyParallel;
+import top.criwits.sawa.model.bullet.AbstractBullet;
+import top.criwits.sawa.model.bullet.BulletStrategyParallel;
 import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.config.Graphics;
 import top.criwits.sawa.config.Probability;
-import top.criwits.sawa.network.WSService;
-import top.criwits.sawa.prop.*;
+import top.criwits.sawa.model.prop.*;
 
 import java.util.LinkedList;
 import java.util.List;

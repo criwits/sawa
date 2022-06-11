@@ -1,4 +1,4 @@
-package top.criwits.sawa.bullet;
+package top.criwits.sawa.model.bullet;
 
 /**
  * An abstract for enemys' bullets

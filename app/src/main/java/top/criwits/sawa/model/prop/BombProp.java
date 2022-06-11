@@ -1,10 +1,10 @@
-package top.criwits.sawa.prop;
+package top.criwits.sawa.model.prop;
 
-import top.criwits.sawa.aircraft.AbstractAircraft;
-import top.criwits.sawa.aircraft.BossEnemy;
-import top.criwits.sawa.aircraft.HeroAircraft;
-import top.criwits.sawa.basic.AbstractFlyingObject;
-import top.criwits.sawa.bullet.AbstractBullet;
+import top.criwits.sawa.model.aircraft.AbstractAircraft;
+import top.criwits.sawa.model.aircraft.BossEnemy;
+import top.criwits.sawa.model.aircraft.HeroAircraft;
+import top.criwits.sawa.model.basic.AbstractFlyingObject;
+import top.criwits.sawa.model.bullet.AbstractBullet;
 import top.criwits.sawa.media.SoundHelper;
 
 import java.util.LinkedList;
