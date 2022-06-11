@@ -1,5 +1,6 @@
 package top.criwits.sawa.model.prop;
 
+import top.criwits.sawa.config.Difficulty;
 import top.criwits.sawa.model.aircraft.AbstractAircraft;
 import top.criwits.sawa.model.aircraft.HeroAircraft;
 import top.criwits.sawa.model.bullet.AbstractBullet;
@@ -15,7 +16,7 @@ public class BloodProp extends AbstractProp {
     @Override
     public int action(HeroAircraft heroAircraft, List<AbstractAircraft> enemyAircraft, List<AbstractBullet> abstractBullets) {
         SoundHelper.playGetSupply();
-        heroAircraft.increaseHp(50);
+        heroAircraft.increaseHp(Difficulty.bloodPropEffectLevel);
         return 0;
     }
 }

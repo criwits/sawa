@@ -5,6 +5,7 @@ package top.criwits.sawa.config;
  */
 public class Kinematics {
     public static int enemySpeedY = 5;
+    public static int enemySpeedYMax = 9;
     public static int enemySpeedX = 2;
     public static int bossSpeedX = 3;
 

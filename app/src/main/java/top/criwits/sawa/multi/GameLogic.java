@@ -379,7 +379,7 @@ public class GameLogic {
 
     private void bloodAction() {
         SoundHelper.playGetSupply();
-        HeroAircraft.getInstance().increaseHp(50);
+        HeroAircraft.getInstance().increaseHp(Difficulty.bloodPropEffectLevel);
     }
 
     private void propSpawn(JSONObject msg) {
@@ -617,7 +617,9 @@ public class GameLogic {
                 if (Probability.eliteProbability < Difficulty.eliteEnemyProbabilityMaximum) {
                     Probability.eliteProbability += Difficulty.eliteEnemyProbabilityIncrease;
                 }
-                Kinematics.enemySpeedY += Difficulty.enemySpeedYIncrease;
+                if (Kinematics.enemySpeedY <= Kinematics.enemySpeedYMax) {
+                    Kinematics.enemySpeedY += Difficulty.enemySpeedYIncrease;
+                }
                 System.out.printf("Boss HP: %d, Boss score threshold: %d, Elite probability: %f, Enemy Speed Y: %d\n",
                         AircraftHP.bossEnemyHP, Difficulty.bossScoreThreshold, Probability.eliteProbability, Kinematics.enemySpeedY);
             }

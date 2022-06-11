@@ -132,7 +132,7 @@ public class SoloActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
-            view.game.setGameOver(false);
+            view.game.setGameOver(true);
         }
         return true;
     }
