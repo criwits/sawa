@@ -40,6 +40,7 @@ public class WSService extends Service {
                     case "join_room_response":
                     case "room_ready":
                     case "game_start":
+                    case "rankings":
                         System.out.println("Received message: " + message);
                         Intent intent = new Intent("top.criwits.sawa.MESSAGE");
                         intent.putExtra("top.criwits.sawa.MESSAGE_RAW", message);

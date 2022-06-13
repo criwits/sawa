@@ -20,4 +20,6 @@
     <string name="waiting">Waiting for teammate…</string>
     <string name="hero_score">Your Score</string>
     <string name="friend_score">Your Teammate\'s Score</string>
+    <string name="multi_ranking_username">Player\'s name</string>
+    <string name="enroll_date">Enroll date</string>
 </resources>
