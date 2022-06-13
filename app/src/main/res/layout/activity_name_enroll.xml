@@ -90,27 +90,29 @@
                 app:layout_constraintVertical_bias="1.0">
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/cancelButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
+                    android:onClick="cancelOnClick"
                     android:text="@string/enroll_cancel"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/button2"
+                    app:layout_constraintEnd_toStartOf="@+id/enrollButton"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/enrollButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:onClick="enrollOnClick"
                     android:text="@string/enroll"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/button"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/cancelButton"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/button" />
+                    app:layout_constraintStart_toEndOf="@+id/cancelButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

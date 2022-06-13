@@ -14,11 +14,11 @@ public abstract class RankingDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "SAWARanking";
     private static RankingDatabase instance;
 
-    //将MyDataBase设置为单例模式
+    //将 MyDataBase设置为单例模式
     public static synchronized RankingDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), RankingDatabase.class, DATABASE_NAME)
-                    //  .allowMainThreadQueries()//运行在主线成中进行耗时任务
+                    .allowMainThreadQueries()
                     .build();
         }
         return instance;
